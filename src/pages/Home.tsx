@@ -47,12 +47,9 @@ export default function Home({ go, onQuickView }: { go: Go; onQuickView: (p: Pro
       <img src={IMAGES.hero} alt="Jet black and burgundy deep wave wigs" fetchPriority="high" />
       <div className="hero-scrim" />
       <div className="hero-inner">
-        <h1>Where Beauty Meets Excellence.</h1>
-        <p className="hero-sub">Discover luxurious hair crafted to complement your confidence and individuality.</p>
-        <div className="hero-cta">
-          <button className="btn light" onClick={() => go('shop', { category: 'All' })}>Shop collection</button>
-          <button className="btn ghost-light" onClick={() => go('product', { id: 'custom-made-to-order-wig' })}>Custom wigs</button>
-        </div>
+        <h1>Beauty.</h1>
+        <p className="hero-sub">Meets excellence.</p>
+        <button className="hero-btn" onClick={() => go('shop', { category: 'All' })}>Shop</button>
       </div>
     </section>
 

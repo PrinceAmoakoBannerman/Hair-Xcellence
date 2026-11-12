@@ -135,14 +135,15 @@
 .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(12px, 2vw, 28px) clamp(12px, 2vw, 24px); }
 
 /* Hero */
-/* Hero — full-bleed photo, header floats over it, title at the bottom */
-.hero { position: relative; margin-top: -76px; height: min(calc(100svh - 36px), 940px); min-height: 600px; overflow: hidden; color: #fff; background: #2a1d1b; }
+/* Hero — simple: photo, short title bottom-left, one outlined button */
+.hero { position: relative; height: min(calc(100svh - 112px), 760px); min-height: 520px; overflow: hidden; color: #fff; background: #2a1d1b; }
 .hero > img { position: absolute; inset: 0; height: 100%; object-fit: cover; object-position: center 30%; }
-.hero-scrim { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(20,10,12,.45) 0%, transparent 22%, transparent 45%, rgba(20,10,12,.72) 100%); }
-.hero-inner { position: absolute; left: 16px; right: 16px; bottom: clamp(40px, 7vh, 80px); display: flex; flex-direction: column; align-items: center; text-align: center; }
-.hero h1 { font: 500 clamp(40px, 5.2vw, 76px)/1 var(--serif); letter-spacing: -.01em; text-shadow: 0 2px 24px rgba(0,0,0,.35); }
-.hero-sub { font-size: clamp(14px, 1.15vw, 17px); line-height: 1.6; max-width: 460px; margin: 14px 0 26px; color: #f6ece0; }
-.hero-cta { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+.hero-scrim { position: absolute; inset: 0; background: linear-gradient(20deg, rgba(15,8,10,.55) 0%, rgba(15,8,10,.15) 40%, transparent 60%); }
+.hero-inner { position: absolute; left: clamp(16px, 5vw, 72px); bottom: clamp(24px, 5vw, 56px); display: flex; flex-direction: column; align-items: flex-start; }
+.hero h1 { font: 400 clamp(40px, 5vw, 72px)/1 var(--serif); text-transform: uppercase; letter-spacing: .02em; }
+.hero-sub { font: 400 clamp(16px, 1.6vw, 22px)/1.2 var(--sans); text-transform: uppercase; letter-spacing: .04em; margin: 4px 0 22px; color: #fff; }
+.hero-btn { min-width: 136px; height: 54px; padding: 0 28px; border: 2px solid #fff; color: #fff; font: 600 15px/1 var(--sans); letter-spacing: .28em; text-transform: uppercase; transition: background .2s, color .2s; }
+.hero-btn:hover { background: #fff; color: var(--ink); }
 
 /* Next-drop band under the hero */
 .drop-band { background: var(--brand-deep); color: #fff; padding: 22px 16px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
@@ -153,13 +154,7 @@
 .hero-proof { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; letter-spacing: .04em; color: #e3cfcf; text-align: center; }
 .hero-proof svg { color: var(--gold); fill: currentColor; flex: none; }
 
-/* Transparent header while it floats over the hero */
 .site-header { transition: background .3s, border-color .3s, box-shadow .3s, color .3s; }
-.site-header.over-hero { background: transparent; backdrop-filter: none; border-color: transparent; box-shadow: none; color: #fff; }
-.site-header.over-hero .logo, .site-header.over-hero .hdr-nav button, .site-header.over-hero .icon-btn { color: #fff; }
-.site-header.over-hero .logo em { color: #f0d6b4; }
-.site-header.over-hero .hdr-nav button::after { background: #fff; }
-.site-header.over-hero .icon-btn:hover { background: rgba(255,255,255,.12); }
 
 /* Countdown */
 .countdown { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; margin-top: 34px; padding: 14px 20px; border: 1px solid var(--line); background: var(--surface); border-radius: 3px; }
@@ -418,12 +413,9 @@
   .logo em { font-size: 24px; }
   .hide-sm { display: none; }
   .icon-btn { width: 40px; height: 40px; }
-  .hero { margin-top: -64px; height: clamp(500px, 128vw, 86svh); min-height: 0; }
-  .hero > img { object-position: center 35%; }
-  .hero-inner { bottom: 28px; }
-  .hero-sub { margin: 10px 0 20px; }
-  .hero-cta { width: 100%; flex-wrap: nowrap; gap: 8px; }
-  .hero-cta .btn { flex: 1; padding: 0 10px; font-size: 11px; letter-spacing: .1em; }
+  .hero { height: auto; aspect-ratio: 4 / 5; min-height: 0; max-height: 82svh; }
+  .hero > img { object-position: center 25%; }
+  .hero-btn { height: 50px; min-width: 130px; font-size: 14px; }
   .drop-band .countdown { width: 100%; justify-content: space-between; padding: 12px 14px; }
   .cd-unit b { font-size: 26px; }
   .cd-unit i { margin: 0 5px; }
@@ -476,7 +468,6 @@ body { font-size: 15px; letter-spacing: .005em; }
 
 /* Headings: Bodoni is wider than Cormorant, so sizes come down */
 .sec-head h2, .custom-copy h2 { font: 400 clamp(28px, 3vw, 40px)/1.1 var(--serif); letter-spacing: -.01em; }
-.hero h1 { font: 400 clamp(34px, 4.4vw, 62px)/1.05 var(--serif); letter-spacing: -.015em; }
 .shop-hero h1 { font: 400 clamp(36px, 4.6vw, 58px)/1.05 var(--serif); }
 .buybox h1 { font: 400 clamp(30px, 3.2vw, 44px)/1.08 var(--serif); }
 .qv-body h2 { font: 400 32px/1.1 var(--serif); }

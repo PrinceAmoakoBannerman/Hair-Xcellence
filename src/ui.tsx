@@ -5,7 +5,7 @@ export type IconName = 'menu' | 'search' | 'user' | 'bag' | 'arrow' | 'chevron' 
 
 export function Icon({ name, size = 20 }: { name: IconName; size?: number }) {
   const paths: Record<IconName, ReactNode> = {
-    menu: <path d="M3 6h18M3 12h18M3 18h18" />,
+    menu: <path d="M4 7h16M4 12h16M4 17h10" />,
     search: <><circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" /></>,
     user: <><circle cx="12" cy="8" r="4" /><path d="M4.5 21a7.5 7.5 0 0 1 15 0" /></>,
     bag: <><path d="M5 8h14l-1 13H6L5 8Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></>,

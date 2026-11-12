@@ -57,7 +57,7 @@ export function Header({ page, category, go, cartCount }: { page: Page; category
 
   return <>
     <Announcement />
-    <header className={`site-header ${scrolled ? 'scrolled' : ''}`}>
+    <header className={`site-header ${scrolled ? 'scrolled' : ''} ${page === 'home' && !scrolled && !search ? 'over-hero' : ''}`}>
       <div className="hdr-left">
         <button className="icon-btn hdr-burger" onClick={() => setMenu(true)} aria-label="Open menu"><Icon name="menu" /></button>
         <Logo onClick={() => go('home')} />

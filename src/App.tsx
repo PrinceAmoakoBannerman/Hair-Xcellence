@@ -5,7 +5,9 @@ import { QuickView } from './ui'
 import Home from './pages/Home'
 import Shop from './pages/Shop'
 import Product, { type Configured } from './pages/Product'
-import { About, Account, Cart, type CartItem, Checkout, Contact } from './pages/Store'
+import { About, Account, type CartItem, Contact } from './pages/Store'
+import { Cart } from './pages/Cart'
+import { Checkout } from './pages/Checkout'
 
 type Route = { page: Page; id: string; category: string }
 
@@ -80,7 +82,7 @@ export default function App() {
     {page === 'shop' && <Shop go={go} category={route.category} onQuickView={setQuick} />}
     {page === 'product' && <Product id={route.id} go={go} onAdd={add} onBuy={c => { add(c); go('checkout') }} />}
     {page === 'cart' && <Cart items={cart} setItems={setCart} go={go} />}
-    {page === 'checkout' && <Checkout items={cart} go={go} />}
+    {page === 'checkout' && <Checkout items={cart} go={go} onPlaced={() => setCart([])} />}
     {page === 'about' && <About />}
     {page === 'contact' && <Contact />}
     {page === 'account' && <Account go={go} />}

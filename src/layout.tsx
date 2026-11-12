@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { type Go, type Page, products, money, startingPrice } from './data'
+import { type Go, type Page, IMAGES, SUPPORT_HOURS, products, money, startingPrice, whatsappLink } from './data'
 import { Icon } from './ui'
 
 const MESSAGES = [
@@ -88,7 +88,21 @@ export function Header({ page, category, go, cartCount }: { page: Page; category
           <button onClick={() => { setMenu(false); go('account') }}><Icon name="user" size={18} /> My account</button>
           <button onClick={() => { setMenu(false); go('cart') }}><Icon name="bag" size={18} /> Shopping bag ({cartCount})</button>
         </div>
-        <div className="drawer-help"><p>Need help choosing?</p><strong>Message us on WhatsApp</strong><button className="btn primary" onClick={() => { setMenu(false); go('contact') }}><Icon name="whatsapp" size={16} /> Chat with us</button></div>
+        <div className="drawer-help">
+          <div className="dh-top">
+            <img src={IMAGES.waterWave} alt="" />
+            <div>
+              <strong>Not sure which wig suits you?</strong>
+              <p>Send us a photo of the look you want and we’ll match the wig, length and density.</p>
+            </div>
+          </div>
+          <a className="dh-wa" href={whatsappLink('Hi Hair Xcellence, I need help choosing a wig.')} target="_blank" rel="noopener noreferrer" onClick={() => setMenu(false)}>
+            <span className="dh-wa-icon"><Icon name="whatsapp" size={18} /></span>
+            <span>Chat on WhatsApp</span>
+            <Icon name="arrow" size={16} />
+          </a>
+          <p className="dh-status"><i aria-hidden /> Usually replies within the hour · {SUPPORT_HOURS}</p>
+        </div>
       </aside>
     </div>
   </>

@@ -34,6 +34,11 @@ export const IMAGES = {
 /** Next collection drop: drives the homepage countdown and early-access popup. */
 export const NEXT_DROP = new Date('2026-11-27T18:00:00Z')
 
+/** WhatsApp business number (international format, digits only) and opening hours. */
+export const WHATSAPP = '233245550198'
+export const SUPPORT_HOURS = 'Mon–Sat, 9am–7pm'
+export const whatsappLink = (message: string) => `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(message)}`
+
 export const money = (n: number) => `GH₵ ${n.toLocaleString()}`
 
 export type Kind = 'wig' | 'bundle' | 'closure'

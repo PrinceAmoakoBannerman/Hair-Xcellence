@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { type Go, type Product, IMAGES, NEXT_DROP, products } from '../data'
+import { type Go, type Product, IMAGES, INSTAGRAM_HANDLE, INSTAGRAM_URL, NEXT_DROP, products } from '../data'
 import { Countdown, EarlyAccess, Icon, ProductRail } from '../ui'
 
 const CATEGORIES = [
@@ -25,7 +25,10 @@ const CUSTOM_OPTIONS = [
   ['Finish', 'Bleached knots, plucked hairline, baby hair, styling'],
 ]
 
-const GALLERY = [IMAGES.burgundy, IMAGES.longWater, IMAGES.layered, IMAGES.bodyBrown, IMAGES.waterWave, IMAGES.straightSide]
+// Instagram tiles (placeholders until a live feed is connected). 18 on desktop, first 12 on phones.
+const GALLERY = [IMAGES.burgundy, IMAGES.longWater, IMAGES.layered, IMAGES.bodyBrown, IMAGES.waterWave, IMAGES.straightSide,
+  IMAGES.hero, IMAGES.bodyWhite, IMAGES.curly, IMAGES.straight, IMAGES.colourEdit, IMAGES.bundles,
+  IMAGES.ginger, IMAGES.dark, IMAGES.red, IMAGES.story, IMAGES.soft, IMAGES.rack]
 
 export default function Home({ go, onQuickView }: { go: Go; onQuickView: (p: Product) => void }) {
   const [popup, setPopup] = useState(false)
@@ -98,14 +101,13 @@ export default function Home({ go, onQuickView }: { go: Go; onQuickView: (p: Pro
     <ProductRail title="Bundles" items={products.filter(p => p.kind === 'bundle')} go={go} onQuickView={onQuickView} onViewAll={() => go('shop', { category: 'Hair Bundles' })} />
 
     {/* Instagram */}
-    <section className="sec sec-cream insta">
-      <div className="sec-head">
-        <h2>Follow us on Instagram</h2>
-        <a className="text-link" href="#" onClick={e => e.preventDefault()}>@hairxcellence</a>
-      </div>
-      <div className="insta-grid">{GALLERY.map((src, i) => <a key={i} href="#" onClick={e => e.preventDefault()} aria-label="View on Instagram"><img src={src} alt="" loading="lazy" /><span><Icon name="instagram" size={22} /></span></a>)}</div>
+    <section className="insta">
+      <h2><a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer">Instagram @{INSTAGRAM_HANDLE}</a></h2>
+      <div className="insta-grid">{GALLERY.map((src, i) => <a key={i} href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" aria-label={`Open @${INSTAGRAM_HANDLE} on Instagram`}>
+        <img src={src} alt="" loading="lazy" />
+        <span><Icon name="instagram" size={22} /></span>
+      </a>)}</div>
     </section>
-
     {popup && <EarlyAccess image={IMAGES.bodyWhite} onClose={closePopup} />}
   </main>
 }

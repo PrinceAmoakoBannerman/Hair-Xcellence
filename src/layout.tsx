@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { type Go, type Page, IMAGES, SUPPORT_HOURS, products, money, startingPrice, whatsappLink } from './data'
+import { type Go, type Page, IMAGES, INSTAGRAM_URL, SUPPORT_HOURS, products, money, startingPrice, whatsappLink } from './data'
 import { Icon } from './ui'
 
 const MESSAGES = [
@@ -172,7 +172,10 @@ export function Footer({ go }: { go: Go }) {
 
     <ul className="ft-pay" aria-label="Payment methods">{PAYMENTS.map(p => <li key={p.cls} className={`pay ${p.cls}`}>{p.cls === 'mc' ? <><i /><i /></> : p.label}<span className="sr-only">{p.cls === 'mc' ? p.label : ''}</span></li>)}</ul>
 
-    <div className="ft-social">{(['instagram', 'whatsapp'] as const).map(i => <button key={i} className="icon-btn" aria-label={i === 'instagram' ? 'Instagram' : 'WhatsApp'}><Icon name={i} size={20} /></button>)}</div>
+    <div className="ft-social">
+      <a className="icon-btn" href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" aria-label="Instagram"><Icon name="instagram" size={20} /></a>
+      <a className="icon-btn" href={whatsappLink('Hi Hair Xcellence')} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><Icon name="whatsapp" size={20} /></a>
+    </div>
     <p className="ft-copy">© {new Date().getFullYear()} HAIR XCELLENCE</p>
   </footer>
 }

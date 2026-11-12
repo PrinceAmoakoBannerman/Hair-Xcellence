@@ -37,6 +37,9 @@ export const NEXT_DROP = new Date('2026-11-27T18:00:00Z')
 /** WhatsApp business number (international format, digits only) and opening hours. */
 export const WHATSAPP = '233245550198'
 export const SUPPORT_HOURS = 'Mon–Sat, 9am–7pm'
+/** Instagram profile. */
+export const INSTAGRAM_HANDLE = 'hairxcellence._'
+export const INSTAGRAM_URL = `https://www.instagram.com/${INSTAGRAM_HANDLE}/`
 export const whatsappLink = (message: string) => `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(message)}`
 
 export const money = (n: number) => `GH₵ ${n.toLocaleString()}`

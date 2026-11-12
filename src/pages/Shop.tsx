@@ -9,10 +9,10 @@ const PRICE_BANDS = [
   { label: 'Over GH₵ 4,500', min: 4501, max: Infinity },
 ]
 const AVAIL: Availability[] = ['In stock', 'Low stock', 'Made to order']
-const SORTS = ['Featured', 'Best selling', 'Newest', 'Price: low to high', 'Price: high to low', 'Top rated'] as const
+const SORTS = ['Featured', 'Best selling', 'Newest', 'Price: low to high', 'Price: high to low'] as const
 type Sort = typeof SORTS[number]
 
-const TITLES: Record<string, string> = { All: 'The Collection', 'All Wigs': 'All Wigs' }
+const TITLES: Record<string, string> = { All: 'Shop all', 'All Wigs': 'All wigs' }
 
 export default function Shop({ go, category, onQuickView }: { go: Go; category: string; onQuickView: (p: Product) => void }) {
   const [cat, setCat] = useState(category)
@@ -44,7 +44,6 @@ export default function Shop({ go, category, onQuickView }: { go: Go; category: 
       'Newest': (a, b) => Number(!!b.isNew) - Number(!!a.isNew),
       'Price: low to high': (a, b) => startingPrice(a) - startingPrice(b),
       'Price: high to low': (a, b) => startingPrice(b) - startingPrice(a),
-      'Top rated': (a, b) => b.rating - a.rating,
     }
     return [...list].sort(by[sort])
   }, [cat, q, bands, textures, avail, sort])
@@ -60,7 +59,7 @@ export default function Shop({ go, category, onQuickView }: { go: Go; category: 
     <section className="shop-hero">
       <p className="crumbs"><button onClick={() => go('home')}>Home</button> / <span>Shop</span>{cat !== 'All' && <> / <span>{cat}</span></>}</p>
       <h1>{TITLES[cat] ?? cat}</h1>
-      <p>Luxury human hair, ethically sourced and hand-finished. Every piece can be customised to you.</p>
+      <p>100% human hair wigs, bundles and closures. Most wigs can be customised.</p>
     </section>
 
     <div className="cat-strip" role="tablist" aria-label="Categories">

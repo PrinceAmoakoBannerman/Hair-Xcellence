@@ -1,5 +1,5 @@
-import { useEffect, useState, type ReactNode } from 'react'
-import { type Go, type Product, money, startingPrice, LENGTHS } from './data'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { type Go, type Product, compareAtPrice, money, startingPrice, LENGTHS } from './data'
 
 export type IconName = 'menu' | 'search' | 'user' | 'bag' | 'arrow' | 'chevron' | 'x' | 'plus' | 'minus' | 'check' | 'heart' | 'whatsapp' | 'box' | 'truck' | 'card' | 'chart' | 'grid' | 'users' | 'settings' | 'edit' | 'trash' | 'star' | 'sliders' | 'eye' | 'instagram' | 'shield' | 'return' | 'sparkle' | 'scissors'
 
@@ -38,35 +38,50 @@ export function Icon({ name, size = 20 }: { name: IconName; size?: number }) {
   return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>{paths[name]}</svg>
 }
 
-export function Stars({ value, size = 13 }: { value: number; size?: number }) {
-  return <span className="stars" aria-label={`${value} out of 5 stars`}>
-    {[1, 2, 3, 4, 5].map(i => <span key={i} className={i <= Math.round(value) ? 'on' : ''}><Icon name="star" size={size} /></span>)}
-  </span>
-}
-
 export function Availability({ value }: { value: Product['availability'] }) {
   const cls = value === 'In stock' ? 'ok' : value === 'Low stock' ? 'low' : 'mto'
   return <span className={`avail ${cls}`}><i />{value}</span>
 }
 
 export function ProductCard({ product, go, onQuickView }: { product: Product; go: Go; onQuickView?: (p: Product) => void }) {
-  const [saved, setSaved] = useState(false)
+  const was = compareAtPrice(product)
+  const open = () => go('product', { id: product.id })
   return <article className="p-card">
     <div className="p-card-media">
-      <button className="p-card-img" onClick={() => go('product', { id: product.id })} aria-label={`View ${product.name}`}>
+      <button className="p-card-img" onClick={open} aria-label={`View ${product.name}`}>
         <img src={product.gallery[0]} alt={product.name} loading="lazy" />
         <img className="alt" src={product.gallery[1] ?? product.gallery[0]} alt="" loading="lazy" />
       </button>
-      {product.tag && <span className="p-card-tag">{product.tag}</span>}
-      <button className={`p-card-save ${saved ? 'on' : ''}`} onClick={() => setSaved(!saved)} aria-label={saved ? 'Remove from wishlist' : 'Save to wishlist'} aria-pressed={saved}><Icon name="heart" size={18} /></button>
-      {onQuickView && <button className="p-card-quick" onClick={() => onQuickView(product)}><Icon name="eye" size={15} /> Quick view</button>}
+      {product.tag && <span className={`p-card-tag ${product.sale ? 'sale' : ''}`}>{product.tag}</span>}
+      {onQuickView && <button className="p-card-quick" onClick={() => onQuickView(product)}>Quick view</button>}
     </div>
-    <button className="p-card-body" onClick={() => go('product', { id: product.id })}>
-      <span className="p-card-row"><h3>{product.name}</h3><span className="p-card-rating"><Icon name="star" size={11} />{product.rating.toFixed(1)}</span></span>
-      <span className="p-card-detail">{product.detail}</span>
-      <span className="p-card-row"><strong>From {money(startingPrice(product))}</strong><Availability value={product.availability} /></span>
+    <button className="p-card-body" onClick={open}>
+      <h3>{product.name}</h3>
+      <span className="p-card-price">
+        {was && <s aria-label={`Was ${money(was)}`}>{money(was)}</s>}
+        <span>from {money(startingPrice(product))}</span>
+      </span>
+      {product.availability !== 'In stock' && <span className="p-card-stock">{product.availability}</span>}
     </button>
   </article>
+}
+
+/** Horizontally swipeable product row (scroll-snap); arrow buttons on desktop. */
+export function ProductRail({ title, items, go, onQuickView, onViewAll }: { title: string; items: Product[]; go: Go; onQuickView?: (p: Product) => void; onViewAll?: () => void }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const scroll = (dir: 1 | -1) => { const el = ref.current; if (el) el.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: 'smooth' }) }
+  if (items.length === 0) return null
+  return <section className="rail-sec">
+    <div className="rail-head">
+      <h2>{title}</h2>
+      <div className="rail-actions">
+        {onViewAll && <button className="text-link" onClick={onViewAll}>View all</button>}
+        <button className="rail-arrow" onClick={() => scroll(-1)} aria-label={`Scroll ${title} left`}><Icon name="chevron" size={18} /></button>
+        <button className="rail-arrow" onClick={() => scroll(1)} aria-label={`Scroll ${title} right`}><Icon name="chevron" size={18} /></button>
+      </div>
+    </div>
+    <div className="rail" ref={ref}>{items.map(p => <ProductCard key={p.id} product={p} go={go} onQuickView={onQuickView} />)}</div>
+  </section>
 }
 
 export function QuickView({ product, go, onClose, onAdd }: { product: Product; go: Go; onClose: () => void; onAdd: (p: Product, length: string) => void }) {
@@ -84,7 +99,6 @@ export function QuickView({ product, go, onClose, onAdd }: { product: Product; g
       <div className="qv-body">
         <p className="eyebrow">{product.categories[0]}</p>
         <h2>{product.name}</h2>
-        <div className="qv-meta"><Stars value={product.rating} /> <span>{product.reviews} reviews</span></div>
         <p className="qv-price">From {money(startingPrice(product))}</p>
         <p className="qv-desc">{product.short}</p>
         <p className="field-label">Length <b>{length}</b></p>
@@ -138,12 +152,12 @@ export function EarlyAccess({ image, onClose }: { image: string; onClose: () => 
       <div className="ea-body">
         <button className="ea-close" onClick={onClose} aria-label="Close"><Icon name="x" size={16} /></button>
         {done ? <>
-          <h2 id="ea-title">You’re on <em>the list.</em></h2>
-          <p>We’ll email you before the drop goes live.</p>
+          <h2 id="ea-title">You’re on the list</h2>
+          <p>We’ll email you before the drop opens.</p>
           <button className="btn primary wide" onClick={onClose}>Continue</button>
         </> : <>
-          <h2 id="ea-title">The next drop is <em>almost here.</em></h2>
-          <p>Join the list for <strong>early access</strong>.</p>
+          <h2 id="ea-title">Get early access</h2>
+          <p>Shop the next wig drop before it goes public.</p>
           <form onSubmit={e => { e.preventDefault(); if (email.includes('@')) setDone(true) }}>
             <input type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="Your email" aria-label="Email address" />
             <button className="btn primary wide" type="submit">Get early access</button>

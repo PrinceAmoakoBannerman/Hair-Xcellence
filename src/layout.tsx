@@ -88,46 +88,77 @@ export function Header({ page, category, go, cartCount }: { page: Page; category
           <button onClick={() => { setMenu(false); go('account') }}><Icon name="user" size={18} /> My account</button>
           <button onClick={() => { setMenu(false); go('cart') }}><Icon name="bag" size={18} /> Shopping bag ({cartCount})</button>
         </div>
-        <div className="drawer-help"><p>Not sure what to choose?</p><strong>Chat with a hair specialist</strong><button className="btn primary" onClick={() => { setMenu(false); go('contact') }}><Icon name="whatsapp" size={16} /> Start a chat</button></div>
+        <div className="drawer-help"><p>Need help choosing?</p><strong>Message us on WhatsApp</strong><button className="btn primary" onClick={() => { setMenu(false); go('contact') }}><Icon name="whatsapp" size={16} /> Chat with us</button></div>
       </aside>
     </div>
   </>
 }
 
+const PAYMENTS = [
+  { label: 'MTN MoMo', cls: 'momo' },
+  { label: 'Telecel Cash', cls: 'telecel' },
+  { label: 'AT Money', cls: 'at' },
+  { label: 'VISA', cls: 'visa' },
+  { label: 'Mastercard', cls: 'mc' },
+]
+
+function FooterSection({ id, title, open, onToggle, children }: { id: string; title: string; open: boolean; onToggle: (id: string) => void; children: React.ReactNode }) {
+  return <div className={`ft-acc ${open ? 'open' : ''}`}>
+    <button className="ft-acc-head" onClick={() => onToggle(id)} aria-expanded={open} aria-controls={`ft-${id}`}>
+      <span>{title}</span><Icon name="chevron" size={18} />
+    </button>
+    <div className="ft-acc-body" id={`ft-${id}`}>{children}</div>
+  </div>
+}
+
 export function Footer({ go }: { go: Go }) {
+  const [open, setOpen] = useState<string | null>(null)
   const [email, setEmail] = useState('')
   const [joined, setJoined] = useState(false)
+  const toggle = (id: string) => setOpen(o => (o === id ? null : id))
   return <footer className="site-footer">
-    <div className="ft-top">
-      <div className="ft-brand">
-        <Logo onClick={() => go('home')} />
-        <p>Luxury human hair, hand-finished in Accra for women who expect more from every detail.</p>
-        <div className="ft-social">{(['instagram', 'whatsapp', 'heart'] as const).map(i => <button key={i} className="icon-btn" aria-label={i}><Icon name={i} size={18} /></button>)}</div>
-      </div>
-      <div><h4>Shop</h4>
-        <button onClick={() => go('shop', { category: 'All Wigs' })}>All wigs</button>
-        <button onClick={() => go('shop', { category: 'Glueless Wigs' })}>Glueless wigs</button>
-        <button onClick={() => go('shop', { category: 'Hair Bundles' })}>Bundles</button>
-        <button onClick={() => go('shop', { category: 'Closures and Frontals' })}>Closures & frontals</button>
-        <button onClick={() => go('product', { id: 'custom-made-to-order-wig' })}>Custom wigs</button>
-      </div>
-      <div><h4>Customer care</h4>
+    <div className="ft-accs">
+      <FooterSection id="about" title="More about us" open={open === 'about'} onToggle={toggle}>
+        <button onClick={() => go('about')}>About us</button>
         <button onClick={() => go('contact')}>Contact us</button>
-        <button>Delivery & returns</button>
+        <button onClick={() => go('shop', { category: 'All' })}>Shop all</button>
+        <button>Privacy policy</button>
+        <button>Terms and conditions</button>
+      </FooterSection>
+      <FooterSection id="help" title="Extra help" open={open === 'help'} onToggle={toggle}>
+        <button onClick={() => go('account')}>Track my order</button>
+        <button>Returns and exchanges</button>
         <button>Wig care guide</button>
         <button>Find your cap size</button>
-        <button onClick={() => go('account')}>Track my order</button>
-      </div>
-      <div className="ft-news"><h4>Join the inner circle</h4>
-        <p>First access to new drops, care rituals and private offers.</p>
-        {joined ? <p className="ft-joined"><Icon name="check" size={16} /> Thank you — you’re on the list.</p> :
-          <form onSubmit={e => { e.preventDefault(); if (email.includes('@')) setJoined(true) }}><input type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="Your email address" aria-label="Email address" /><button aria-label="Subscribe"><Icon name="arrow" /></button></form>}
-      </div>
+        <button onClick={() => go('contact')}>WhatsApp us</button>
+      </FooterSection>
+      <FooterSection id="delivery" title="Delivery options" open={open === 'delivery'} onToggle={toggle}>
+        <h5>Ready-to-ship orders</h5>
+        <p>Accra express (1–2 working days): <b>GH₵ 60</b></p>
+        <p>Standard delivery, Ghana (2–5 working days): <b>GH₵ 80</b></p>
+        <p><b>Free delivery in Accra</b> on orders over GH₵ 2,500</p>
+        <p>International (5–10 working days): <b>quoted at checkout</b></p>
+        <h5>Custom orders</h5>
+        <p>Made to order in 10–15 working days, then shipped with your chosen delivery option.</p>
+      </FooterSection>
+      <FooterSection id="signup" title="Sign up and save" open={open === 'signup'} onToggle={toggle}>
+        <p>New drops, restocks and offers by email.</p>
+        {joined ? <p className="ft-joined"><Icon name="check" size={16} /> Thanks, you’re signed up.</p> :
+          <form className="ft-form" onSubmit={e => { e.preventDefault(); if (email.includes('@')) setJoined(true) }}>
+            <input type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="Email address" aria-label="Email address" />
+            <button className="btn primary">Sign up</button>
+          </form>}
+      </FooterSection>
     </div>
-    <div className="ft-bottom">
-      <span>© {new Date().getFullYear()} Hair Xcellence · East Legon, Accra</span>
-      <span className="ft-pay">MTN MoMo · Telecel Cash · Visa · Mastercard</span>
-      <span><button>Privacy</button> · <button>Terms</button></span>
+
+    <div className="ft-locale">
+      <label><span className="sr-only">Language</span><select defaultValue="en" aria-label="Language"><option value="en">English</option></select></label>
+      <label className="ft-country"><i className="flag-gh" aria-hidden /><select defaultValue="gh" aria-label="Country and currency"><option value="gh">Ghana (GH₵)</option></select></label>
     </div>
+
+    <ul className="ft-pay" aria-label="Payment methods">{PAYMENTS.map(p => <li key={p.cls} className={`pay ${p.cls}`}>{p.cls === 'mc' ? <><i /><i /></> : p.label}<span className="sr-only">{p.cls === 'mc' ? p.label : ''}</span></li>)}</ul>
+
+    <div className="ft-social">{(['instagram', 'whatsapp'] as const).map(i => <button key={i} className="icon-btn" aria-label={i === 'instagram' ? 'Instagram' : 'WhatsApp'}><Icon name={i} size={20} /></button>)}</div>
+    <p className="ft-copy">© {new Date().getFullYear()} HAIR XCELLENCE</p>
   </footer>
 }

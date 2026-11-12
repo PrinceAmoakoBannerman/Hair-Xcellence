@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import { type Go, type Option, type OptionGroup, type Product as P, ADDONS, defaultChoices, groupsFor, money, priceFor, products, reviews } from '../data'
-import { Availability, Icon, ProductCard, Stars } from '../ui'
+import { type Go, type Option, type OptionGroup, type Product as P, ADDONS, defaultChoices, groupsFor, money, priceFor, products } from '../data'
+import { Availability, Icon, ProductCard } from '../ui'
 
 export type Configured = { product: P; choices: Record<string, string>; addons: string[]; qty: number; unitPrice: number }
 
@@ -66,7 +66,6 @@ export default function Product({ id, go, onAdd, onBuy }: { id: string; go: Go; 
       <section className="buybox">
         <p className="eyebrow">{product.categories.join(' · ')}</p>
         <h1>{product.name}</h1>
-        <a className="rating-link" href="#reviews" onClick={e => { e.preventDefault(); document.getElementById('reviews')?.scrollIntoView({ behavior: 'smooth' }) }}><Stars value={product.rating} /> <span>{product.rating.toFixed(1)} · {product.reviews} reviews</span></a>
         <div className="price-row">
           <strong className="price" aria-live="polite">{money(unit)}</strong>
           {unit !== base && <span className="price-from">Base {money(base)} · <b>+{money(unit - base)}</b> customisation</span>}
@@ -106,7 +105,7 @@ export default function Product({ id, go, onAdd, onBuy }: { id: string; go: Go; 
               {choices.laceType && <><dt>Lace</dt><dd>{choices.laceType}{choices.laceSize && `, ${choices.laceSize}`}</dd></>}
               {choices.density && <><dt>Density</dt><dd>{choices.density}</dd></>}
               {choices.cap && <><dt>Cap</dt><dd>{choices.cap}, adjustable straps & combs</dd></>}
-              <dt>Can be coloured</dt><dd>Yes — up to 613 by a professional</dd>
+              <dt>Can be coloured</dt><dd>Yes, up to 613 (by a professional)</dd>
               <dt>Lifespan</dt><dd>12–24 months with proper care</dd>
             </dl>
           </Accordion>
@@ -118,25 +117,8 @@ export default function Product({ id, go, onAdd, onBuy }: { id: string; go: Go; 
       </section>
     </div>
 
-    {/* Reviews */}
-    <section className="reviews" id="reviews">
-      <div className="rev-summary">
-        <p className="eyebrow">Customer reviews</p>
-        <strong className="rev-score">{product.rating.toFixed(1)}</strong>
-        <Stars value={product.rating} size={16} />
-        <p className="muted">Based on {product.reviews} reviews</p>
-        <div className="rev-bars">{[5, 4, 3, 2, 1].map((s, i) => { const pct = [82, 13, 3, 1, 1][i]; return <div key={s}><span>{s}</span><i><b style={{ width: `${pct}%` }} /></i><small>{pct}%</small></div> })}</div>
-        <button className="btn outline wide">Write a review</button>
-      </div>
-      <div className="rev-list">{reviews.map(r => <article key={r.name}>
-        <div className="rev-top"><Stars value={r.rating} /><span>{r.date}</span></div>
-        <h3>{r.title}</h3><p>{r.body}</p>
-        <div className="rev-foot"><strong>{r.name}</strong><span><Icon name="check" size={13} /> Verified buyer</span><small>{r.options}</small></div>
-      </article>)}</div>
-    </section>
-
     {related.length > 0 && <section className="sec related-sec">
-      <div className="sec-head"><div><p className="eyebrow">Complete the look</p><h2>You may also <em>love.</em></h2></div></div>
+      <div className="sec-head"><h2>You may also like</h2></div>
       <div className="grid-4">{related.map(p => <ProductCard key={p.id} product={p} go={go} />)}</div>
     </section>}
 

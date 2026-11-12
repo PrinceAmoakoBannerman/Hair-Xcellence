@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useState } from 'react'
-import { type GoOpts, type Page, type Product as P, defaultChoices, groupsFor, priceFor, products } from './data'
+import { type GoOpts, type Page, type Product as P, choiceLabel, defaultChoices, groupsFor, priceFor, products } from './data'
 import { Footer, Header } from './layout'
 import { QuickView } from './ui'
 import Home from './pages/Home'
@@ -11,7 +11,7 @@ type Route = { page: Page; id: string; category: string }
 
 const toItem = ({ product, choices, addons, qty, unitPrice }: Configured): CartItem => ({
   name: product.name,
-  detail: [...groupsFor(product).map(g => choices[g.key]), ...addons].join(' · '),
+  detail: [...groupsFor(product).map(g => choiceLabel(g.key, choices[g.key])), ...addons].join(' · '),
   price: unitPrice,
   image: product.image,
   tag: product.categories[0],

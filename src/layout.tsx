@@ -3,8 +3,8 @@ import { type Go, type Page, products, money, startingPrice } from './data'
 import { Icon } from './ui'
 
 const MESSAGES = [
-  'Complimentary delivery in Accra on orders over GH₵ 2,500',
-  'Custom wigs hand-finished in 10–15 working days',
+  'Delivery across Ghana and worldwide',
+  'Need your wig sooner? Choose express or priority production',
   'Pay securely with Mobile Money or card',
 ]
 
@@ -136,10 +136,10 @@ export function Footer({ go }: { go: Go }) {
         <h5>Ready-to-ship orders</h5>
         <p>Accra express (1–2 working days): <b>GH₵ 60</b></p>
         <p>Standard delivery, Ghana (2–5 working days): <b>GH₵ 80</b></p>
-        <p><b>Free delivery in Accra</b> on orders over GH₵ 2,500</p>
         <p>International (5–10 working days): <b>quoted at checkout</b></p>
         <h5>Custom orders</h5>
-        <p>Made to order in 10–15 working days, then shipped with your chosen delivery option.</p>
+        <p>Standard production: 10–15 working days.</p>
+        <p>Express: 5–7 working days · Priority: 48–72 hours (extra charge, chosen on the product page).</p>
       </FooterSection>
       <FooterSection id="signup" title="Sign up and save" open={open === 'signup'} onToggle={toggle}>
         <p>New drops, restocks and offers by email.</p>

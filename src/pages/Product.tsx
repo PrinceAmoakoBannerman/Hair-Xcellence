@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { type Go, type Option, type OptionGroup, type Product as P, ADDONS, defaultChoices, groupsFor, money, priceFor, products } from '../data'
+import { type Go, type Option, type OptionGroup, type Product as P, ADDONS, PRODUCTION, choiceLabel, defaultChoices, groupsFor, money, priceFor, products } from '../data'
 import { Availability, Icon, ProductCard } from '../ui'
 
 export type Configured = { product: P; choices: Record<string, string>; addons: string[]; qty: number; unitPrice: number }
@@ -83,7 +83,7 @@ export default function Product({ id, go, onAdd, onBuy }: { id: string; go: Go; 
         </div>
 
         <div className="summary-box">
-          <div><span>Your selection</span><p>{groups.map(gr => choices[gr.key]).join(' · ')}{addons.length > 0 && ` · ${addons.join(' · ')}`}</p></div>
+          <div><span>Your selection</span><p>{groups.map(gr => choiceLabel(gr.key, choices[gr.key])).join(' · ')}{addons.length > 0 && ` · ${addons.join(' · ')}`}</p></div>
           <div className="buy-row">
             <div className="qty" aria-label="Quantity"><button onClick={() => setQty(Math.max(1, qty - 1))} aria-label="Decrease quantity"><Icon name="minus" size={15} /></button><span>{qty}</span><button onClick={() => setQty(qty + 1)} aria-label="Increase quantity"><Icon name="plus" size={15} /></button></div>
             <button className="btn primary grow" onClick={() => { onAdd(config); setAdded(true) }}>{added ? <>Added to bag <Icon name="check" size={16} /></> : <>Add to cart · {money(unit * qty)}</>}</button>
@@ -92,7 +92,7 @@ export default function Product({ id, go, onAdd, onBuy }: { id: string; go: Go; 
         </div>
 
         <ul className="perks">
-          <li><Icon name="truck" size={18} /><span><strong>Delivery</strong>Accra 1–2 days · Ghana 2–5 days · International 5–10 days{product.availability === 'Made to order' && '. Made-to-order pieces dispatch in 10–15 working days.'}</span></li>
+          <li><Icon name="truck" size={18} /><span><strong>Delivery</strong>Accra 1–2 days · Ghana 2–5 days · International 5–10 days{choices.production ? `. Production: ${PRODUCTION.find(o => o.label === choices.production)?.hint?.replace('Ready in', 'ready in') ?? ''}, then shipped.` : ''}</span></li>
           <li><Icon name="return" size={18} /><span><strong>Easy returns</strong>Unworn ready-to-ship pieces within 7 days. Custom pieces are final sale.</span></li>
           <li><Icon name="shield" size={18} /><span><strong>Secure checkout</strong>Mobile Money and card payments via Paystack.</span></li>
         </ul>

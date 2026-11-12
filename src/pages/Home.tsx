@@ -10,7 +10,7 @@ const CATEGORIES = [
 ]
 
 const SERVICES = [
-  { title: 'Free delivery in Accra', copy: 'On orders over GH₵ 2,500' },
+  { title: 'Delivery nationwide', copy: 'Accra 1–2 days, Ghana 2–5 days' },
   { title: 'Mobile Money or card', copy: 'Secure checkout with Paystack' },
   { title: '7-day returns', copy: 'On unworn ready-to-ship wigs' },
   { title: 'Help on WhatsApp', copy: 'Mon–Sat, 9am–7pm' },
@@ -87,7 +87,7 @@ export default function Home({ go, onQuickView }: { go: Go; onQuickView: (p: Pro
       <div className="custom-media"><img src={IMAGES.bodyBrown} alt="Custom body wave wig on a mannequin" loading="lazy" /></div>
       <div className="custom-copy">
         <h2>Custom wigs</h2>
-        <p>Choose every detail and we make the wig for you. Custom orders are ready to ship in 10–15 working days.</p>
+        <p>Choose every detail and we make the wig for you. Custom orders are ready in 10–15 working days, or sooner with express (5–7 days) or priority (48–72 hours) production.</p>
         <dl className="spec-list">{CUSTOM_OPTIONS.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
         <button className="btn light" onClick={() => go('product', { id: 'custom-made-to-order-wig' })}>Build your wig</button>
       </div>

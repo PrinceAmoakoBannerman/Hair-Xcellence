@@ -93,6 +93,16 @@ export const matchesCategory = (p: Product, category: string) =>
 export type Option = { label: string; price: number; hint?: string; swatch?: string }
 export type OptionGroup = { key: string; title: string; style: 'pill' | 'card' | 'swatch'; options: Option[]; note?: string }
 
+/**
+ * Production time for wigs. Customers can pay to have their wig made faster.
+ * Edit the fees (GH₵) and turnaround times here.
+ */
+export const PRODUCTION: Option[] = [
+  { label: 'Standard', price: 0, hint: 'Ready in 10–15 working days' },
+  { label: 'Express', price: 400, hint: 'Ready in 5–7 working days' },
+  { label: 'Priority', price: 800, hint: 'Ready in 48–72 hours' },
+]
+
 export const LENGTHS = ['10"', '12"', '14"', '16"', '18"', '20"', '22"', '24"', '26"', '28"', '30"', '32"']
 
 export function groupsFor(p: Product): OptionGroup[] {
@@ -118,7 +128,8 @@ export function groupsFor(p: Product): OptionGroup[] {
   ] }
   if (p.kind === 'bundle') return [length, texture, colour]
   if (p.kind === 'closure') return [length, texture, laceType, laceSize, colour]
-  return [length, texture, laceType, laceSize, density, colour, cap]
+  const production: OptionGroup = { key: 'production', title: 'Production time', style: 'card', note: 'Need it sooner? Choose express or priority and we move your wig to the front of the queue.', options: PRODUCTION }
+  return [length, texture, laceType, laceSize, density, colour, cap, production]
 }
 
 export const ADDONS: Option[] = [
@@ -147,6 +158,9 @@ export function priceFor(p: Product, choices: Record<string, string>, addons: st
   for (const a of addons) total += ADDONS.find(o => o.label === a)?.price ?? 0
   return total
 }
+
+/** Human-readable value of a chosen option, e.g. production time reads "Express production". */
+export const choiceLabel = (key: string, value: string) => (key === 'production' ? `${value} production` : value)
 
 export const startingPrice = (p: Product) => priceFor(p, defaultChoices(p), [])
 

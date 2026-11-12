@@ -1,0 +1,21 @@
+# Dependencies & build output
+node_modules/
+dist/
+build/
+.cache/
+.vite/
+*.tsbuildinfo
+vite.config.*.timestamp-*
+
+# Environment
+.env*
+
+# Logs
+logs/
+*.log
+*-debug.log*
+
+# Editor / local tooling
+.vscode/
+.idea/
+.DS_Store

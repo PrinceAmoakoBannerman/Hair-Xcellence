@@ -820,3 +820,13 @@ body { font-size: 15px; letter-spacing: .005em; }
 .co-bar .brand i { font: italic 500 26px/1 'Cormorant Garamond', Georgia, serif; color: var(--brand); margin: 0 3px; }
 .co-bar .brand { height: 64px; margin: 0; padding: 0; display: inline-flex; align-items: center; }
 .co-bar .brand strong { line-height: 1; }
+
+/* Hero text and button, a size smaller */
+.hero h1 { font-size: clamp(32px, 3.8vw, 56px); }
+.hero-sub { font-size: clamp(13px, 1.15vw, 17px); margin: 4px 0 18px; }
+.hero-btn { height: 46px; min-width: 116px; padding: 0 22px; font-size: 13px; letter-spacing: .24em; border-width: 1.5px; }
+@media (max-width: 600px) {
+  .hero h1 { font-size: 34px; }
+  .hero-sub { font-size: 14px; margin-bottom: 16px; }
+  .hero-btn { height: 42px; min-width: 108px; font-size: 12px; }
+}

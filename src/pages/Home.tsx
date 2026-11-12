@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { type Go, type Product, IMAGES, INSTAGRAM_HANDLE, INSTAGRAM_URL, NEXT_DROP, products } from '../data'
+import { type Go, type Product, IMAGES, INSTAGRAM_HANDLE, INSTAGRAM_URL, NEXT_DROP, SUPPORT_HOURS, products } from '../data'
 import { Countdown, EarlyAccess, Icon, ProductRail } from '../ui'
 
 const CATEGORIES = [
@@ -10,10 +10,11 @@ const CATEGORIES = [
 ]
 
 const SERVICES = [
-  { title: 'Delivery nationwide', copy: 'Accra 1–2 days, Ghana 2–5 days' },
-  { title: 'Mobile Money or card', copy: 'Secure checkout with Paystack' },
-  { title: '7-day returns', copy: 'On unworn ready-to-ship wigs' },
-  { title: 'Help on WhatsApp', copy: 'Mon–Sat, 9am–7pm' },
+  { title: 'Order by 2pm', copy: 'Same-day dispatch on in-stock wigs.' },
+  { title: 'Nationwide delivery', copy: 'Accra 1–2 days, rest of Ghana 2–5 days.' },
+  { title: 'Need it sooner?', copy: 'Express and priority production on wigs.' },
+  { title: 'MoMo or card', copy: 'Secure checkout with Paystack.' },
+  { title: 'Help on WhatsApp', copy: `${SUPPORT_HOURS}.` },
 ]
 
 const CUSTOM_OPTIONS = [
@@ -63,7 +64,7 @@ export default function Home({ go, onQuickView }: { go: Go; onQuickView: (p: Pro
 
     {/* Services */}
     <section className="services" aria-label="Store services">
-      {SERVICES.map(s => <div key={s.title}><strong>{s.title}</strong><span>{s.copy}</span></div>)}
+      {SERVICES.map(s => <div key={s.title}><strong>{s.title}</strong><p>{s.copy}</p></div>)}
     </section>
 
     {/* Product rows */}

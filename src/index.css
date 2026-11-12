@@ -477,11 +477,6 @@ body { font-size: 15px; letter-spacing: .005em; }
 .collection-copy > span { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; border-bottom: 1px solid currentColor; padding-bottom: 3px; }
 
 /* Services strip */
-.services { display: grid; grid-template-columns: repeat(4, 1fr); border-bottom: 1px solid var(--line); background: var(--surface); }
-.services > div { padding: 22px 20px; text-align: center; border-right: 1px solid var(--line); display: flex; flex-direction: column; gap: 3px; }
-.services > div:last-child { border-right: 0; }
-.services strong { font-size: 14px; font-weight: 500; }
-.services span { font-size: 13px; color: var(--muted); }
 
 /* Custom wigs spec list */
 .custom-copy > p { margin: 16px 0 26px; }
@@ -510,14 +505,8 @@ body { font-size: 15px; letter-spacing: .005em; }
 .empty h2 { font: 400 30px var(--serif); }
 
 @media (max-width: 900px) {
-  .services { grid-template-columns: 1fr 1fr; }
-  .services > div:nth-child(2) { border-right: 0; }
-  .services > div:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
 }
 @media (max-width: 600px) {
-  .services > div { padding: 16px 10px; }
-  .services strong { font-size: 13px; }
-  .services span { font-size: 12px; }
   .spec-list > div { grid-template-columns: 84px 1fr; font-size: 13px; }
 }
 
@@ -643,15 +632,16 @@ body { font-size: 15px; letter-spacing: .005em; }
 .insta h2 { text-align: center; font: 400 clamp(20px, 2.4vw, 34px)/1.2 var(--sans); text-transform: uppercase; letter-spacing: .01em; margin-bottom: clamp(24px, 3vw, 40px); }
 .insta h2 a { color: var(--ink); text-decoration: none; }
 .insta h2 a:hover { color: var(--brand); }
-.insta-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; max-width: 1180px; margin: 0 auto; }
+.insta-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 3px; max-width: 1060px; margin: 0 auto; }
 .insta-grid a { position: relative; aspect-ratio: 1; overflow: hidden; background: #eee; }
 .insta-grid img { height: 100%; object-fit: cover; transition: transform .5s; }
 .insta-grid span { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(48,35,31,.35); color: #fff; opacity: 0; transition: opacity .25s; }
 .insta-grid a:hover span, .insta-grid a:focus-visible span { opacity: 1; }
 .insta-grid a:hover img { transform: scale(1.04); }
 @media (max-width: 900px) {
-  .insta-grid { grid-template-columns: repeat(3, 1fr); gap: 3px; }
-  .insta-grid a:nth-child(n+13) { display: none; }
+  .insta { padding-left: 16px; padding-right: 16px; }
+  .insta-grid { gap: 2px; }
+  .insta-grid span { display: none; }
 }
 .site-footer .ft-social a { color: var(--ink); }
 
@@ -659,4 +649,16 @@ body { font-size: 15px; letter-spacing: .005em; }
 @media (max-width: 600px) {
   .hero { height: auto; min-height: 0; aspect-ratio: 6 / 7; max-height: none; }
   .hero > img { object-position: 36% 30%; }
+}
+
+/* Service strip: left-aligned, bold title over a short line; swipeable on phones */
+.services { display: grid; grid-template-columns: repeat(5, 1fr); background: #fff; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 0 clamp(16px, 4vw, 56px); }
+.services > div { padding: 26px 24px 26px 0; }
+.services strong { display: block; font: 600 clamp(17px, 1.4vw, 20px)/1.25 var(--sans); color: var(--ink); letter-spacing: -.005em; }
+.services p { margin-top: 8px; font-size: 14px; line-height: 1.45; color: var(--muted); }
+@media (max-width: 1100px) {
+  .services { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding: 0; overscroll-behavior-x: contain; }
+  .services::-webkit-scrollbar { display: none; }
+  .services > div { flex: 0 0 min(78%, 320px); scroll-snap-align: start; padding: 24px 16px; }
+  .services > div:first-child { padding-left: 16px; }
 }

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { type Go, type Product, IMAGES, INSTAGRAM_HANDLE, INSTAGRAM_URL, NEXT_DROP, SUPPORT_HOURS, products } from '../data'
+import { type Go, type Product, IMAGES, INSTAGRAM_HANDLE, INSTAGRAM_URL, NEXT_DROP, products } from '../data'
 import { Countdown, EarlyAccess, Icon, ProductRail } from '../ui'
 
 const CATEGORIES = [
@@ -10,11 +10,11 @@ const CATEGORIES = [
 ]
 
 const SERVICES = [
-  { title: 'Order by 2pm', copy: 'Same-day dispatch on in-stock wigs.' },
-  { title: 'Nationwide delivery', copy: 'Accra 1–2 days, rest of Ghana 2–5 days.' },
-  { title: 'Need it sooner?', copy: 'Express and priority production on wigs.' },
-  { title: 'MoMo or card', copy: 'Secure checkout with Paystack.' },
-  { title: 'Help on WhatsApp', copy: `${SUPPORT_HOURS}.` },
+  'Order by 2pm for same-day dispatch',
+  'Nationwide delivery',
+  'Express & priority production',
+  'Pay with MoMo or card',
+  'WhatsApp help Mon–Sat',
 ]
 
 const CUSTOM_OPTIONS = [
@@ -63,8 +63,11 @@ export default function Home({ go, onQuickView }: { go: Go; onQuickView: (p: Pro
     </section>
 
     {/* Services */}
-    <section className="services" aria-label="Store services">
-      {SERVICES.map(s => <div key={s.title}><strong>{s.title}</strong><p>{s.copy}</p></div>)}
+    <section className="ticker" aria-label="Store services">
+      <p className="sr-only">{SERVICES.join('. ')}.</p>
+      <div className="ticker-track" aria-hidden>
+        {[0, 1].map(copy => <ul key={copy}>{SERVICES.map(t => <li key={t}>{t}</li>)}</ul>)}
+      </div>
     </section>
 
     {/* Product rows */}

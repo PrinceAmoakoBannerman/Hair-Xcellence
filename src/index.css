@@ -573,3 +573,10 @@ html, body { overflow-x: clip; }
   .buy-row .btn.grow { font-size: 11px; letter-spacing: .08em; padding: 0 10px; }
   .summary-box { padding: 16px; }
 }
+
+/* iOS Safari zooms the page when a focused field's text is under 16px.
+   Keep every form field at 16px on phones/tablets so tapping one never zooms. */
+@media (max-width: 1100px) {
+  :is(input, select, textarea) { font-size: 16px !important; }
+  .search-field input { font-size: 24px !important; }
+}

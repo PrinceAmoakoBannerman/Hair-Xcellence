@@ -29,7 +29,10 @@ export const NAV: NavItem[] = [
 ]
 
 function Logo({ onClick }: { onClick: () => void }) {
-  return <button className="logo" onClick={onClick} aria-label="Hair Xcellence home"><span>HAIR</span><em>X</em><span>CELLENCE</span></button>
+  return <button className="logo" onClick={onClick} aria-label="Hair Xcellence home">
+    <span className="logo-word">hair<b>x</b>cellence</span>
+    <span className="logo-tag">Luxury human hair</span>
+  </button>
 }
 
 export function Header({ page, category, go, cartCount }: { page: Page; category?: string; go: Go; cartCount: number }) {
@@ -58,17 +61,15 @@ export function Header({ page, category, go, cartCount }: { page: Page; category
   return <>
     <Announcement />
     <header className={`site-header ${scrolled ? 'scrolled' : ''}`}>
-      <div className="hdr-left">
-        <button className="icon-btn hdr-burger" onClick={() => setMenu(true)} aria-label="Open menu"><Icon name="menu" /></button>
-        <Logo onClick={() => go('home')} />
-      </div>
+      <button className="icon-btn hdr-burger" onClick={() => setMenu(true)} aria-label="Open menu"><Icon name="menu" size={28} /></button>
+      <div className="hdr-logo"><Logo onClick={() => go('home')} /></div>
       <nav className="hdr-nav" aria-label="Main">
         {NAV.map(n => <button key={n.label} className={isActive(n) ? 'active' : ''} onClick={() => nav(n)}>{n.label}</button>)}
       </nav>
       <div className="hdr-actions">
-        <button className="icon-btn" onClick={() => setSearch(!search)} aria-label="Search" aria-expanded={search}><Icon name={search ? 'x' : 'search'} /></button>
+        <button className="icon-btn" onClick={() => setSearch(!search)} aria-label="Search" aria-expanded={search}><Icon name={search ? 'x' : 'search'} size={26} /></button>
         <button className="icon-btn hide-sm" onClick={() => go('account')} aria-label="Account"><Icon name="user" /></button>
-        <button className="icon-btn cart-btn" onClick={() => go('cart')} aria-label={`Cart, ${cartCount} items`}><Icon name="bag" />{cartCount > 0 && <b>{cartCount}</b>}</button>
+        <button className="icon-btn cart-btn" onClick={() => go('cart')} aria-label={`Cart, ${cartCount} items`}><Icon name="cart" size={28} />{cartCount > 0 && <b>{cartCount}</b>}</button>
       </div>
       {search && <div className="search-panel">
         <div className="search-field"><Icon name="search" /><input autoFocus value={q} onChange={e => setQ(e.target.value)} onKeyDown={e => { if (e.key === 'Escape') setSearch(false); if (e.key === 'Enter' && results[0]) { setSearch(false); go('product', { id: results[0].id }) } }} placeholder="Search wigs, textures, bundles…" aria-label="Search products" /></div>

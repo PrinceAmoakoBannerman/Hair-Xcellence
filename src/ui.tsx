@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { type Go, type Product, compareAtPrice, money, startingPrice, LENGTHS } from './data'
 
-export type IconName = 'menu' | 'search' | 'user' | 'bag' | 'arrow' | 'chevron' | 'x' | 'plus' | 'minus' | 'check' | 'heart' | 'whatsapp' | 'box' | 'truck' | 'card' | 'chart' | 'grid' | 'users' | 'settings' | 'edit' | 'trash' | 'star' | 'sliders' | 'eye' | 'instagram' | 'shield' | 'return' | 'sparkle' | 'scissors'
+export type IconName = 'menu' | 'search' | 'user' | 'bag' | 'arrow' | 'chevron' | 'x' | 'plus' | 'minus' | 'check' | 'heart' | 'whatsapp' | 'box' | 'truck' | 'card' | 'chart' | 'grid' | 'users' | 'settings' | 'edit' | 'trash' | 'star' | 'sliders' | 'eye' | 'instagram' | 'shield' | 'return' | 'sparkle' | 'scissors' | 'cart'
 
 export function Icon({ name, size = 20 }: { name: IconName; size?: number }) {
   const paths: Record<IconName, ReactNode> = {
-    menu: <path d="M4 7h16M4 12h16M4 17h10" />,
+    menu: <path d="M3 6h18M3 12h18M3 18h18" />,
     search: <><circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" /></>,
     user: <><circle cx="12" cy="8" r="4" /><path d="M4.5 21a7.5 7.5 0 0 1 15 0" /></>,
     bag: <><path d="M5 8h14l-1 13H6L5 8Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></>,
@@ -33,6 +33,7 @@ export function Icon({ name, size = 20 }: { name: IconName; size?: number }) {
     shield: <><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3Z" /><path d="m8.5 12 2.5 2.5 4.5-5" /></>,
     return: <path d="M9 14 4 9l5-5M4 9h11a5 5 0 0 1 0 10h-3" />,
     sparkle: <path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6" />,
+    cart: <><path d="M2 4h2.6l2.5 11.2h11.3L21 7.5H5.4" /><circle cx="9.2" cy="19.6" r="1.1" /><circle cx="16.8" cy="19.6" r="1.1" /></>,
     scissors: <><circle cx="6" cy="6" r="3" /><circle cx="6" cy="18" r="3" /><path d="M8.1 8.1 20 20M8.1 15.9 20 4" /></>,
   }
   return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>{paths[name]}</svg>

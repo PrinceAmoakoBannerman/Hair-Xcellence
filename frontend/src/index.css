@@ -665,6 +665,7 @@ body { font-size: 15px; letter-spacing: .005em; }
 .order-done { background: var(--bg); padding: clamp(28px, 5vw, 64px) 16px 80px; }
 .od-wrap { max-width: 980px; margin: 0 auto; }
 .od-head { display: flex; align-items: center; gap: 16px; }
+.od-check.od-due { border-color: #c78a2e; color: #c78a2e; font: 600 22px var(--sans); }
 .od-check { width: 48px; height: 48px; flex: none; border-radius: 50%; border: 1.5px solid var(--brand); color: var(--brand); display: grid; place-items: center; }
 .od-num { font-size: 13px; color: var(--muted); letter-spacing: .02em; }
 .od-head h1 { font: 600 clamp(24px, 3vw, 30px)/1.2 var(--sans); letter-spacing: -.01em; margin-top: 2px; }
@@ -968,3 +969,20 @@ body { font-size: 15px; line-height: 1.6; }
   .acct-details .form-grid { grid-template-columns: 1fr; }
   .acct-track li { font-size: 11px; }
 }
+
+/* Payments */
+.acct-pay { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 14px; padding: 12px 14px; border-radius: 6px; background: #fbf0dc; color: #6b4a12; font-size: 14px; }
+.acct-pay .btn { min-height: 40px; padding: 0 18px; }
+.pay-wait { min-height: 46vh; display: grid; place-items: center; padding: 48px 16px; }
+.pay-slim { display: flex; align-items: center; gap: 14px; width: min(380px, 100%); padding: 14px 20px; background: var(--cream, #FFFCF7); border: 1px solid var(--line); border-radius: 999px; animation: rise .3s ease; }
+.pay-slim .pay-spinner { width: 22px; height: 22px; border-width: 2px; flex: none; }
+.pay-slim p { display: flex; flex-direction: column; gap: 1px; margin: 0; }
+.pay-slim strong { font: 500 14px/1.3 var(--sans); color: var(--ink, #30231F); }
+.pay-slim small { font-size: 12px; color: var(--muted, #7a6a62); }
+.od-totals .od-rush dt, .od-totals .od-rush dd, .bag-summary .od-rush dt, .bag-summary .od-rush dd { color: var(--brand); }
+.pay-result h1 { font-size: clamp(22px, 2.6vw, 28px); }
+.pay-warn { background: #c78a2e !important; box-shadow: 0 0 0 8px rgba(199, 138, 46, .14) !important; font: 700 26px var(--sans); }
+.pay-spinner { width: 48px; height: 48px; border-radius: 50%; border: 3px solid var(--line); border-top-color: var(--brand); animation: pay-spin .9s linear infinite; }
+@keyframes pay-spin { to { transform: rotate(360deg); } }
+.od-pay { margin: -8px 0 22px; }
+.od-paid { color: #2f6b3d; font-weight: 600; }

@@ -104,3 +104,10 @@ export const logout = () => request<void>('/api/auth/logout/', { method: 'POST' 
 export const fetchAccount = () => request<Account>('/api/auth/me/')
 export const updateAccount = (body: Partial<Account>) => request<Account>('/api/auth/me/', { method: 'PATCH', body: JSON.stringify(body) })
 export const fetchMyOrders = () => request<OrderResponse[]>('/api/auth/orders/')
+
+// ── Online payment (Paystack) ───────────────────────────────────────
+export const fetchPaymentConfig = () => request<{ online: boolean }>('/api/payments/config/')
+export const startPayment = (order: string, email: string) =>
+  request<{ authorization_url: string; reference: string }>('/api/payments/start/', { method: 'POST', body: JSON.stringify({ order, email }) })
+export const verifyPayment = (reference: string) =>
+  request<{ paystack_status: string; order: OrderResponse }>(`/api/payments/verify/?reference=${encodeURIComponent(reference)}`)

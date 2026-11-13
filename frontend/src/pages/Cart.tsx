@@ -1,4 +1,4 @@
-import { type Go, money } from '../data'
+import { type Go, money, productionFee, productionFeeEach } from '../data'
 import { useProducts } from '../store'
 import { Icon, ProductRail } from '../ui'
 import { type CartItem, shortDetail } from './Store'
@@ -18,6 +18,7 @@ export function Cart({ items, setItems, go }: { items: CartItem[]; setItems: (x:
   const { products } = useProducts()
   const count = items.reduce((s, x) => s + x.qty, 0)
   const subtotal = items.reduce((s, x) => s + x.price * x.qty, 0)
+  const rushFee = productionFee(items)
   const setQty = (i: number, d: number) => setItems(items.map((x, j) => (j === i ? { ...x, qty: Math.max(1, x.qty + d) } : x)))
   const remove = (i: number) => setItems(items.filter((_, j) => j !== i))
   const suggestions = products.filter(p => p.isBest && !items.some(x => x.name === p.name))
@@ -42,10 +43,10 @@ export function Cart({ items, setItems, go }: { items: CartItem[]; setItems: (x:
           <div className="bag-info">
             <div className="bag-top">
               <strong>{x.name}</strong>
-              <span className="bag-price">{money(x.price * x.qty)}</span>
+              <span className="bag-price">{money((x.price - productionFeeEach(x.choices)) * x.qty)}</span>
             </div>
             <p>{shortDetail(x.detail, 4)}</p>
-            {x.qty > 1 && <small>{money(x.price)} each</small>}
+            {x.qty > 1 && <small>{money(x.price - productionFeeEach(x.choices))} each</small>}
             <div className="bag-actions">
               <div className="stepper" aria-label={`Quantity for ${x.name}`}>
                 <button onClick={() => setQty(i, -1)} disabled={x.qty <= 1} aria-label="Decrease quantity"><Icon name="minus" size={14} /></button>
@@ -60,7 +61,8 @@ export function Cart({ items, setItems, go }: { items: CartItem[]; setItems: (x:
         <aside className="bag-summary">
           <h2>Order summary</h2>
           <dl>
-            <div><dt>Subtotal</dt><dd>{money(subtotal)}</dd></div>
+            <div><dt>Subtotal</dt><dd>{money(subtotal - rushFee.fee)}</dd></div>
+            {rushFee.fee > 0 && <div className="od-rush"><dt>{rushFee.label}</dt><dd>{money(rushFee.fee)}</dd></div>}
             <div><dt>Delivery</dt><dd className="muted">Calculated at checkout</dd></div>
             <div className="grand"><dt>Total</dt><dd>{money(subtotal)}</dd></div>
           </dl>

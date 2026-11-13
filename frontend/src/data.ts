@@ -1,4 +1,4 @@
-export type Page = 'home' | 'shop' | 'product' | 'cart' | 'checkout' | 'account' | 'about' | 'contact'
+export type Page = 'home' | 'shop' | 'product' | 'cart' | 'checkout' | 'account' | 'about' | 'contact' | 'payment'
 export type GoOpts = { id?: string; category?: string }
 export type Go = (page: Page, opts?: GoOpts) => void
 
@@ -108,7 +108,7 @@ export type OptionGroup = { key: string; title: string; style: 'pill' | 'card' |
 export const PRODUCTION: Option[] = [
   { label: 'Standard', price: 0, hint: 'Ready in 10–15 working days' },
   { label: 'Express', price: 400, hint: 'Ready in 5–7 working days' },
-  { label: 'Priority', price: 800, hint: 'Ready in 48–72 hours' },
+  { label: 'Priority', price: 800, hint: 'Ready in 2 working days' },
 ]
 
 export const LENGTHS = ['10"', '12"', '14"', '16"', '18"', '20"', '22"', '24"', '26"', '28"', '30"', '32"']
@@ -169,6 +169,26 @@ export function priceFor(p: Product, choices: Record<string, string>, addons: st
 
 /** Human-readable value of a chosen option, e.g. production time reads "Express production". */
 export const choiceLabel = (key: string, value: string) => (key === 'production' ? `${value} production` : value)
+
+/** Faster-production fee for one item (already included in its price). */
+export const productionFeeEach = (choices?: Record<string, string>) => PRODUCTION.find(o => o.label === choices?.production)?.price ?? 0
+
+/**
+ * Total faster-production fee across a bag or order, so it can be shown as its own line.
+ * `label` names the fastest option picked, e.g. "Priority production · ready in 2 working days".
+ */
+export function productionFee(items: { choices?: Record<string, string>; qty: number }[]) {
+  let fee = 0
+  let fastest: Option | undefined
+  for (const x of items) {
+    const o = PRODUCTION.find(p => p.label === x.choices?.production)
+    if (!o?.price) continue
+    fee += o.price * x.qty
+    if (!fastest || o.price > fastest.price) fastest = o
+  }
+  const label = fastest ? `${fastest.label} production${fastest.hint ? ` · ${fastest.hint.replace('Ready in', 'ready in')}` : ''}` : ''
+  return { fee, label }
+}
 
 /** The "from" price on cards: exactly the price set in the admin (shortest length, cheapest options). */
 export const startingPrice = (p: Product) => p.price

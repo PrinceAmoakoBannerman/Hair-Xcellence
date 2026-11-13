@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { type Account as AccountT, type OrderResponse, apiAvailable, fetchMyOrders, updateAccount } from '../api'
+import { type Account as AccountT, type OrderResponse, apiAvailable, fetchMyOrders, fetchPaymentConfig, startPayment, updateAccount } from '../api'
 import { firstName, useAuth } from '../auth'
 import { type Go, money } from '../data'
 import { Icon } from '../ui'
@@ -88,9 +88,16 @@ function Dashboard({ account, go }: { account: AccountT; go: Go }) {
   const [orders, setOrders] = useState<OrderResponse[] | null>(null)
   const [error, setError] = useState('')
 
+  const [online, setOnline] = useState(false)
   useEffect(() => {
     fetchMyOrders().then(setOrders).catch(e => { setOrders([]); setError(e instanceof Error ? e.message : '') })
+    fetchPaymentConfig().then(c => setOnline(c.online)).catch(() => setOnline(false))
   }, [])
+  const pay = async (o: OrderResponse) => {
+    try { window.location.href = (await startPayment(o.number, o.email)).authorization_url }
+    catch (e) { setError(e instanceof Error ? e.message : 'Could not start payment.') }
+  }
+  const onPay = online ? pay : undefined
 
   const latest = orders?.[0]
   const active = orders?.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length ?? 0
@@ -117,7 +124,7 @@ function Dashboard({ account, go }: { account: AccountT; go: Go }) {
       <section className="acct-card acct-span">
         <div className="acct-card-head"><h2>Latest order</h2>{latest && <button className="acct-link" onClick={() => setTab('orders')}>All orders</button>}</div>
         {orders === null ? <p className="muted">Loading your orders…</p>
-          : latest ? <OrderCard order={latest} compact />
+          : latest ? <OrderCard order={latest} compact onPay={onPay} />
           : <div className="acct-empty"><p>You haven’t placed an order yet.</p><button className="btn primary" onClick={() => go('shop', { category: 'All' })}>Shop now</button></div>}
       </section>
       <section className="acct-card acct-stats">
@@ -135,7 +142,7 @@ function Dashboard({ account, go }: { account: AccountT; go: Go }) {
 
     {tab === 'orders' && <div className="acct-orders">
       {orders === null ? <p className="muted">Loading your orders…</p>
-        : orders.length ? orders.map(o => <section className="acct-card" key={o.number}><OrderCard order={o} /></section>)
+        : orders.length ? orders.map(o => <section className="acct-card" key={o.number}><OrderCard order={o} onPay={onPay} /></section>)
         : <section className="acct-card acct-empty"><p>No orders yet. Orders you place while signed in will appear here.</p><button className="btn primary" onClick={() => go('shop', { category: 'All' })}>Shop now</button></section>}
     </div>}
 
@@ -151,7 +158,9 @@ function Tracker({ status }: { status: string }) {
   </ol>
 }
 
-function OrderCard({ order, compact = false }: { order: OrderResponse; compact?: boolean }) {
+function OrderCard({ order, compact = false, onPay }: { order: OrderResponse; compact?: boolean; onPay?: (o: OrderResponse) => void }) {
+  const [busy, setBusy] = useState(false)
+  const unpaid = (order.payment_status === 'pending' || order.payment_status === 'failed') && order.status !== 'cancelled'
   return <div className="acct-order">
     <div className="acct-order-top">
       <div><strong>Order #{order.number}</strong><small>Placed {date(order.created_at)}</small></div>
@@ -161,6 +170,7 @@ function OrderCard({ order, compact = false }: { order: OrderResponse; compact?:
       </div>
     </div>
     <Tracker status={order.status} />
+    {unpaid && onPay && <div className="acct-pay"><span>Payment of {money(order.total)} still due.</span><button className="btn primary" disabled={busy} onClick={() => { setBusy(true); onPay(order) }}>{busy ? 'Opening Paystack…' : 'Pay now'}</button></div>}
     {!compact && <ul className="acct-items">{order.items.map((it, i) => <li key={i}>
       {it.image ? <img src={it.image} alt="" /> : <span className="acct-noimg" />}
       <div><strong>{it.product_name}</strong><small>{[...Object.values(it.options), ...it.addons].join(' · ')}</small></div>

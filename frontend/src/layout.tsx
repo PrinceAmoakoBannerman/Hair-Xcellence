@@ -155,7 +155,7 @@ export function Footer({ go }: { go: Go }) {
         <p>International (5–10 working days): <b>quoted at checkout</b></p>
         <h5>Custom orders</h5>
         <p>Standard production: 10–15 working days.</p>
-        <p>Express: 5–7 working days · Priority: 48–72 hours (extra charge, chosen on the product page).</p>
+        <p>Express: 5–7 working days · Priority: 2 working days (extra fee, chosen on the product page).</p>
       </FooterSection>
       <FooterSection id="signup" title="Sign up and save" open={open === 'signup'} onToggle={toggle}>
         <p>New drops, restocks and offers by email.</p>

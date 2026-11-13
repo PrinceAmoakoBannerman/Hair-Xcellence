@@ -96,7 +96,7 @@ export default function Home({ go, onQuickView }: { go: Go; onQuickView: (p: Pro
       <div className="custom-media"><img src={IMAGES.bodyBrown} alt="Custom body wave wig on a mannequin" loading="lazy" /></div>
       <div className="custom-copy">
         <h2>Custom wigs</h2>
-        <p>Choose every detail and we make the wig for you. Custom orders are ready in 10–15 working days, or sooner with express (5–7 days) or priority (48–72 hours) production.</p>
+        <p>Choose every detail and we make the wig for you. Custom orders are ready in 10–15 working days, or sooner with express (5–7 days) or priority (2 working days) production for an extra fee.</p>
         <dl className="spec-list">{CUSTOM_OPTIONS.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
         <button className="btn light" onClick={() => go('product', { id: 'custom-made-to-order-wig' })}>Build your wig</button>
       </div>

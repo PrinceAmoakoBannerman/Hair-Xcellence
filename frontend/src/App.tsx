@@ -7,6 +7,7 @@ import Shop from './pages/Shop'
 import Product, { type Configured } from './pages/Product'
 import { About, type CartItem, Contact } from './pages/Store'
 import Account from './pages/Account'
+import PaymentResult from './pages/PaymentResult'
 import { Cart } from './pages/Cart'
 import { Checkout } from './pages/Checkout'
 
@@ -24,16 +25,23 @@ const toItem = ({ product, choices, addons, qty, unitPrice }: Configured): CartI
   qty,
 })
 
-const PAGES: Page[] = ['home', 'shop', 'product', 'cart', 'checkout', 'account', 'about', 'contact']
+const PAGES: Page[] = ['home', 'shop', 'product', 'cart', 'checkout', 'account', 'about', 'contact', 'payment']
 
 /** Hash routes: #/shop/Glueless%20Wigs, #/product/adom, #/cart … */
 function parseHash(): Route {
+  // Back from Paystack: https://site/?paystack=1&trxref=…&reference=…  →  #/payment/<reference>
+  const query = new URLSearchParams(window.location.search)
+  const ref = query.get('reference') || query.get('trxref')
+  if (ref) {
+    window.history.replaceState(null, '', `${window.location.pathname}#/payment/${encodeURIComponent(ref)}`)
+    return { page: 'payment', id: ref, category: 'All' }
+  }
   const [, raw = 'home', arg] = window.location.hash.split('/')
   const page = (PAGES as string[]).includes(raw) ? (raw as Page) : 'home'
   const decoded = arg ? decodeURIComponent(arg) : undefined
   return {
     page,
-    id: page === 'product' && decoded ? decoded : '',
+    id: (page === 'product' || page === 'payment') && decoded ? decoded : '',
     category: page === 'shop' && decoded ? decoded : 'All',
   }
 }
@@ -58,7 +66,7 @@ export default function App() {
   }, [route.page, route.id, route.category])
 
   const go = useCallback((page: Page, opts?: GoOpts) => {
-    const arg = page === 'product' ? opts?.id : page === 'shop' ? opts?.category ?? 'All' : undefined
+    const arg = page === 'product' || page === 'payment' ? opts?.id : page === 'shop' ? opts?.category ?? 'All' : undefined
     const hash = `#/${page}${arg ? `/${encodeURIComponent(arg)}` : ''}`
     if (window.location.hash === hash) window.scrollTo({ top: 0, behavior: 'smooth' })
     else window.location.hash = hash
@@ -90,6 +98,7 @@ export default function App() {
     {page === 'about' && <About />}
     {page === 'contact' && <Contact />}
     {page === 'account' && <Account go={go} />}
+    {page === 'payment' && <PaymentResult reference={route.id} go={go} />}
     {chrome && <Footer go={go} />}
     {quick && <QuickView product={quick} go={go} onClose={() => setQuick(null)} onAdd={quickAdd} />}
   </div>

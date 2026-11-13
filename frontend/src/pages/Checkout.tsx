@@ -1,11 +1,11 @@
-import { useState } from 'react'
-import { type Go, money, whatsappLink } from '../data'
+import { useEffect, useState } from 'react'
+import { type Go, money, productionFee, productionFeeEach, whatsappLink } from '../data'
 import { Icon } from '../ui'
-import { placeOrder as submitOrder } from '../api'
+import { fetchPaymentConfig, placeOrder as submitOrder, startPayment } from '../api'
 import { useAuth } from '../auth'
 import { type CartItem, shortDetail } from './Store'
 
-const DELIVERY = [
+export const DELIVERY = [
   { name: 'Accra express', time: '1–2 working days', fee: 60 },
   { name: 'Standard delivery', time: '2–5 working days', fee: 80 },
 ]
@@ -13,7 +13,7 @@ const PAYMENTS = ['MTN Mobile Money', 'Telecel Cash', 'AT Money', 'Debit / Credi
 const REGIONS = ['Greater Accra', 'Ashanti', 'Central', 'Eastern', 'Western', 'Volta', 'Northern', 'Upper East', 'Upper West', 'Bono', 'Bono East', 'Ahafo', 'Western North', 'Oti', 'Savannah', 'North East']
 
 type Contact = { name: string; email: string; phone: string; address: string; city: string; region: string }
-type Order = { number: string; date: string; items: CartItem[]; subtotal: number; deliveryFee: number; delivery: typeof DELIVERY[number]; payment: string; contact: Contact }
+export type Order = { number: string; date: string; items: CartItem[]; subtotal: number; deliveryFee: number; delivery: typeof DELIVERY[number]; payment: string; contact: Contact }
 
 const required: (keyof Contact)[] = ['name', 'email', 'phone', 'address', 'city']
 const LABELS: Record<keyof Contact, string> = { name: 'Full name', email: 'Email address', phone: 'Phone number', address: 'Delivery address', city: 'City', region: 'Region' }
@@ -35,10 +35,26 @@ export function Checkout({ items, go, onPlaced }: { items: CartItem[]; go: Go; o
   const [payment, setPayment] = useState(PAYMENTS[0])
   const [order, setOrder] = useState<Order | null>(null)
   const [placing, setPlacing] = useState(false)
+  const [online, setOnline] = useState(false)  // Paystack switched on in the backend?
+  useEffect(() => { fetchPaymentConfig().then(c => setOnline(c.online)).catch(() => setOnline(false)) }, [])
   const [submitError, setSubmitError] = useState('')
+  const [payLater, setPayLater] = useState(false)
   const subtotal = items.reduce((s, x) => s + x.price * x.qty, 0)
+  const rushFee = productionFee(items)
 
-  if (order) return <Confirmation order={order} go={go} />
+  const [redirecting, setRedirecting] = useState(false)
+  // Back from Paystack may restore this page from the browser's cache; reload so the payment check runs.
+  useEffect(() => {
+    const onShow = (e: PageTransitionEvent) => { if (e.persisted) window.location.reload() }
+    window.addEventListener('pageshow', onShow)
+    return () => window.removeEventListener('pageshow', onShow)
+  }, [])
+
+  if (order) return <Confirmation order={order} go={go} payLater={payLater} />
+
+  if (redirecting) return <main className="pay-wait">
+    <div className="pay-slim" role="status"><span className="pay-spinner" aria-hidden /><p><strong>Taking you to secure payment…</strong><small>Please don’t close this page.</small></p></div>
+  </main>
 
   if (items.length === 0) return <main className="checkout-empty">
     <h1>Your bag is empty</h1>
@@ -69,17 +85,33 @@ export function Checkout({ items, go, onPlaced }: { items: CartItem[]; go: Go; o
         payment_method: payment,
         items: items.map(x => ({ product: x.productId, options: x.choices, addons: x.addons, quantity: x.qty })),
       })
-      setOrder({
+      const receipt: Order = {
         number: res.number,
         date: new Date(res.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }),
         items: items.map((x, i) => ({ ...x, price: res.items[i]?.unit_price ?? x.price })),
         subtotal: res.subtotal, deliveryFee: res.delivery_fee, delivery, payment, contact,
-      })
+      }
+      const payOnline = await fetchPaymentConfig().then(c => c.online).catch(() => online)
+      if (payOnline) {
+        try {
+          const pay = await startPayment(res.number, contact.email)
+          setRedirecting(true)
+          onPlaced()
+          // If the customer comes back without paying (browser Back), they land on the payment check
+          // for this order, which shows "payment not completed" with a Pay now button, never a receipt.
+          window.history.replaceState(null, '', `${window.location.pathname}#/payment/${encodeURIComponent(pay.reference)}`)
+          window.location.href = pay.authorization_url  // Paystack's secure page (MoMo or card)
+          return  // keep the button in its "placing" state until the browser leaves
+        } catch {
+          setPayLater(true)  // order is saved; they can pay from their account or we follow up
+        }
+      }
       onPlaced()
+      setOrder(receipt)
       window.scrollTo({ top: 0, behavior: 'instant' })
+      setPlacing(false)
     } catch (e) {
       setSubmitError(e instanceof Error ? e.message : 'Something went wrong. Please try again.')
-    } finally {
       setPlacing(false)
     }
   }
@@ -96,14 +128,15 @@ export function Checkout({ items, go, onPlaced }: { items: CartItem[]; go: Go; o
     <ul className="co-items">{items.map((x, i) => <li key={i}>
       <div className="od-thumb"><img src={x.image} alt="" /><b>{x.qty}</b></div>
       <div><strong>{x.name}</strong><small>{shortDetail(x.detail, 3)}</small></div>
-      <span>{money(x.price * x.qty)}</span>
+      <span>{money((x.price - productionFeeEach(x.choices)) * x.qty)}</span>
     </li>)}</ul>
     <dl className="od-totals">
-      <div><dt>Subtotal</dt><dd>{money(subtotal)}</dd></div>
+      <div><dt>Subtotal</dt><dd>{money(subtotal - rushFee.fee)}</dd></div>
+      {rushFee.fee > 0 && <div className="od-rush"><dt>{rushFee.label}</dt><dd>{money(rushFee.fee)}</dd></div>}
       <div><dt>Delivery · {delivery.name}</dt><dd>{money(delivery.fee)}</dd></div>
       <div className="grand"><dt>Total</dt><dd>{money(subtotal + delivery.fee)}</dd></div>
     </dl>
-    {rushOf(items) && <p className="co-note"><Icon name="truck" size={15} /> {rushOf(items)} selected. Your wig moves to the front of the queue.</p>}
+    {rushOf(items) && <p className="co-note"><Icon name="truck" size={15} /> {rushOf(items)} selected. Your wig moves to the front of the queue; the fee is shown above.</p>}
   </>
 
   return <main className="co">
@@ -154,12 +187,12 @@ export function Checkout({ items, go, onPlaced }: { items: CartItem[]; go: Go; o
           <div className="co-options">{PAYMENTS.map((x, i) => <label key={x} className={`co-option ${payment === x ? 'on' : ''}`}>
             <input type="radio" name="payment" checked={payment === x} onChange={() => setPayment(x)} />
             <span className="co-radio" />
-            <span className="co-opt-text"><strong>{x}</strong>{i < 3 && <small>We’ll send payment details to your phone</small>}</span>
+            <span className="co-opt-text"><strong>{x}</strong>{i < 3 && <small>{online ? 'Approve the payment on your phone' : 'We’ll send payment details to your phone'}</small>}</span>
             <span className={`pay ${['momo', 'telecel', 'at', 'visa'][i]}`}>{['MoMo', 'Telecel', 'AT', 'VISA'][i]}</span>
           </label>)}</div>
           {submitError && <p className="co-error" role="alert">{submitError}</p>}
-          <button className="btn primary wide co-pay" onClick={placeOrder} disabled={placing}>{placing ? 'Placing your order…' : `Place order · ${money(subtotal + delivery.fee)}`}</button>
-          <p className="secure-note"><Icon name="shield" size={15} /> No payment is taken now. We’ll confirm your order and send payment details on WhatsApp.</p>
+          <button className="btn primary wide co-pay" onClick={placeOrder} disabled={placing}>{placing ? (online ? 'Opening secure payment…' : 'Placing your order…') : `${online ? 'Place order & pay' : 'Place order'} · ${money(subtotal + delivery.fee)}`}</button>
+          <p className="secure-note"><Icon name="shield" size={15} /> {online ? 'You’ll pay securely on Paystack after placing your order.' : 'No payment is taken now. We’ll confirm your order and send payment details on WhatsApp.'}</p>
         </section>
       </div>
 
@@ -173,25 +206,35 @@ export function Checkout({ items, go, onPlaced }: { items: CartItem[]; go: Go; o
   </main>
 }
 
-function Confirmation({ order, go }: { order: Order; go: Go }) {
+export function Confirmation({ order, go, payLater = false, paid = false, onPay }: { order: Order; go: Go; payLater?: boolean; paid?: boolean; onPay?: () => void }) {
   const { contact } = order
   const first = contact.name.trim().split(/\s+/)[0]
   const rush = rushOf(order.items)
+  const rushFee = productionFee(order.items)
   const steps = ['Confirmed', 'Processing', 'Shipped', 'Delivered']
+  const unpaid = !paid && !!onPay
   return <main className="order-done">
     <div className="od-wrap">
       <header className="od-head">
-        <span className="od-check"><Icon name="check" size={22} /></span>
+        {unpaid
+          ? <span className="od-check od-due" aria-hidden>!</span>
+          : <span className="od-check"><Icon name="check" size={22} /></span>}
         <div>
           <p className="od-num">Order #{order.number}</p>
-          <h1>Thank you{first ? `, ${first}` : ''}!</h1>
+          <h1>{unpaid ? 'Payment not completed' : <>Thank you{first ? `, ${first}` : ''}!</>}</h1>
         </div>
       </header>
-      <p className="od-lead">We’ve received your order. We’ll message you on <b>{contact.phone}</b> to confirm it and send payment details, then keep you updated until it’s delivered.</p>
+      {payLater && <p className="co-error">We couldn’t open the payment page just now. Your order is saved; you can pay from your account (Orders → Pay now) or we’ll send payment details on WhatsApp.</p>}
+      <p className="od-lead">{paid
+        ? <>Payment received. We’ll keep you updated on <b>{contact.phone}</b> until your order is delivered.</>
+        : unpaid
+          ? <>Your order is saved but not confirmed yet. Complete the payment to confirm it; nothing has been charged.</>
+          : <>We’ve received your order. We’ll message you on <b>{contact.phone}</b> to confirm it and send payment details, then keep you updated until it’s delivered.</>}</p>
+      {unpaid && <div className="acct-pay od-pay"><span>Payment of {money(order.subtotal + order.deliveryFee)} is still due.</span><button className="btn primary" onClick={onPay}>Pay now</button></div>}
 
-      <ol className="od-steps" aria-label="Order progress">
+      {!unpaid && <ol className="od-steps" aria-label="Order progress">
         {steps.map((s, i) => <li key={s} className={i === 0 ? 'done' : ''}><i>{i === 0 ? <Icon name="check" size={12} /> : i + 1}</i><span>{s}</span></li>)}
-      </ol>
+      </ol>}
 
       <div className="od-grid">
         <section className="od-card">
@@ -199,10 +242,11 @@ function Confirmation({ order, go }: { order: Order; go: Go }) {
           <ul className="od-items">{order.items.map((x, i) => <li key={i}>
             <div className="od-thumb"><img src={x.image} alt="" /><b>{x.qty}</b></div>
             <div><strong>{x.name}</strong><small>{shortDetail(x.detail, 3)}</small></div>
-            <span>{money(x.price * x.qty)}</span>
+            <span>{money((x.price - productionFeeEach(x.choices)) * x.qty)}</span>
           </li>)}</ul>
           <dl className="od-totals">
-            <div><dt>Subtotal</dt><dd>{money(order.subtotal)}</dd></div>
+            <div><dt>Subtotal</dt><dd>{money(order.subtotal - rushFee.fee)}</dd></div>
+            {rushFee.fee > 0 && <div className="od-rush"><dt>{rushFee.label}</dt><dd>{money(rushFee.fee)}</dd></div>}
             <div><dt>Delivery</dt><dd>{money(order.deliveryFee)}</dd></div>
             <div className="grand"><dt>Order total</dt><dd>{money(order.subtotal + order.deliveryFee)}</dd></div>
           </dl>
@@ -213,7 +257,7 @@ function Confirmation({ order, go }: { order: Order; go: Go }) {
           <dl className="od-details">
             <div><dt>Order number</dt><dd>{order.number}</dd></div>
             <div><dt>Order date</dt><dd>{order.date}</dd></div>
-            <div><dt>Payment</dt><dd>{order.payment} · awaiting payment</dd></div>
+            <div><dt>Payment</dt><dd>{order.payment} · {paid ? <b className="od-paid">Paid</b> : 'awaiting payment'}</dd></div>
             <div><dt>Delivery</dt><dd>{order.delivery.name} · {order.delivery.time}</dd></div>
             {rush && <div><dt>Production</dt><dd>{rush}</dd></div>}
           </dl>

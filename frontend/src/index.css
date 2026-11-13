@@ -880,3 +880,9 @@ body { font-size: 15px; line-height: 1.6; }
 .shop-hero > p:last-child { font-size: 15px; }
 .buybox .price-row { margin-top: 14px; }
 .buybox h1 + .price-row .price { font-size: 24px; }
+
+/* Headings a step bigger */
+:root { --h-xl: clamp(30px, 3.6vw, 44px); --h-lg: clamp(24px, 2.6vw, 32px); --h-md: 19px; }
+.buybox h1 { font-size: clamp(24px, 2.6vw, 32px); }
+.collection-copy strong { font-size: clamp(20px, 2vw, 26px); }
+.customise-head h2 { font-size: 15px; }

@@ -1,46 +1,80 @@
 # Hair Xcellence
 
-Storefront for **Hair Xcellence** — luxury human hair wigs, bundles and closures, hand-finished in Accra.
-
-## Features
-
-- Homepage with next-drop countdown and early-access signup
-- Shop catalogue with search, category, price, texture and availability filters, sorting and quick view
-- Product pages with full wig customisation (length, texture, lace type & size, density, colour, cap size, finishing touches) and live pricing
-- Cart, checkout (Mobile Money / card UI), customer account and order tracking
-- Responsive, mobile-first design
-
-## Tech stack
-
-React 19 · TypeScript · Vite · Tailwind CSS v4
-
-## Getting started
-
-```bash
-pnpm install     # or: npm install
-pnpm dev         # http://localhost:5173
-pnpm build       # production build in dist/
-```
-
-Expose the dev server on your local network (to test on a phone):
-
-```bash
-pnpm dev --host
-```
-
-## Project structure
+Storefront and backend for **Hair Xcellence**: luxury human hair wigs, bundles and closures, hand-finished in Accra.
 
 ```
-src/
-  data.ts        products, pricing rules, images, next drop date
-  ui.tsx         shared components (icons, product card, quick view, countdown, popup)
-  layout.tsx     announcement bar, header, footer
-  pages/         Home, Shop, Product, and cart/checkout/account pages
-  index.css      design tokens and styles
-public/images/   product and campaign photography
+HAIR XCELLENCE/
+├── frontend/     React + TypeScript + Vite site      → deployed on Vercel
+├── backend/      Django + Django REST Framework API  → deployed on Render
+└── render.yaml   Render blueprint for the backend
 ```
+
+## Run locally (two terminals)
+
+### Terminal 1: frontend
+
+```bat
+cd frontend
+npm install
+npm run dev
+```
+
+Opens on http://localhost:5173. Add `-- --host` to `npm run dev` to test on your phone over Wi-Fi.
+
+### Terminal 2: backend
+
+First time only:
+
+```bat
+cd backend
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+copy .env.example .env
+python manage.py migrate
+python manage.py seed_products
+python manage.py createsuperuser
+```
+
+Every time after that:
+
+```bat
+cd backend
+.venv\Scripts\activate
+python manage.py runserver 8001
+```
+
+- API: http://127.0.0.1:8001/api/products/
+- Admin: http://127.0.0.1:8001/admin/
+
+Port 8001 is used so it doesn't clash with other Django projects on the default port 8000.
+
+Run the tests with `python manage.py test`.
+
+## API
+
+| Method | Path | Purpose |
+|---|---|---|
+| GET | `/api/health/` | Health check |
+| GET | `/api/products/` | All active products. Filters: `?category=Glueless%20Wigs`, `?kind=wig` |
+| GET | `/api/products/<slug>/` | One product |
+| POST | `/api/orders/` | Place an order. Prices are recalculated on the server from the chosen options |
+
+Option prices live in `backend/catalog/pricing.py` and must match `frontend/src/data.ts`.
+
+## Deploy
+
+**Frontend (Vercel):** project settings → Build & Deployment → **Root Directory: `frontend`**. Framework preset: Vite.
+
+**Backend (Render):** New + → Blueprint → choose this repository. `render.yaml` creates the web service (root `backend/`) and a Postgres database. After the first deploy:
+
+1. In the service's environment, set `CORS_ALLOWED_ORIGINS` to your Vercel URL and `CSRF_TRUSTED_ORIGINS` to your Render URL.
+2. Open the service's **Shell** and run `python manage.py createsuperuser` and `python manage.py seed_products`.
+
+No secrets are stored in the repository. Local settings go in `backend/.env` (ignored by git); production values are set in Render.
 
 ## Roadmap
 
-- Django backend and admin for products, orders and customers
-- Payment integration
+- Connect the frontend to the API (products and orders)
+- Paystack payments (MoMo and card)
+- Order confirmation emails and WhatsApp/SMS updates

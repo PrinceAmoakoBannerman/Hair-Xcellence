@@ -1,4 +1,4 @@
-# Dependencies & build output
+# ── Frontend (frontend/) ──
 node_modules/
 dist/
 build/
@@ -7,15 +7,26 @@ build/
 *.tsbuildinfo
 vite.config.*.timestamp-*
 
-# Environment
-.env*
+# ── Backend (backend/) ──
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+db.sqlite3
+staticfiles/
+media/
 
-# Logs
+# ── Environment / secrets ──
+.env
+.env.*
+!.env.example
+
+# ── Logs ──
 logs/
 *.log
 *-debug.log*
 
-# Editor / local tooling
+# ── Editor / OS ──
 .vscode/
 .idea/
 .DS_Store

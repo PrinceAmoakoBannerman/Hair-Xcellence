@@ -833,3 +833,50 @@ body { font-size: 15px; letter-spacing: .005em; }
   .ticker-track { animation: none; }
 }
 @media (max-width: 600px) { .ticker li { font-size: 11px; padding: 13px 0; } .ticker li::after { padding: 0 14px; } }
+
+/* ═══ Type system v3: Jost everywhere, Bodoni only for the hero word ═══
+   Headings: bold uppercase sans on one size scale (like a fashion storefront).
+   Small labels: lighter spaced capitals. Body: Jost 400. */
+:root {
+  --display: 'Bodoni Moda', 'Didot', 'Times New Roman', serif;
+  --serif: 'Jost', 'Futura', system-ui, sans-serif; /* old serif slots now render in the sans */
+  --h-xl: clamp(26px, 3vw, 36px);   /* page titles */
+  --h-lg: clamp(20px, 2vw, 26px);   /* section titles */
+  --h-md: 17px;                      /* card / block titles */
+}
+body { font-size: 15px; line-height: 1.6; }
+
+/* Hero word keeps the fashion serif; logo X keeps the italic Cormorant */
+.hero h1 { font-family: var(--display); }
+.brand i { font-family: 'Cormorant Garamond', Georgia, serif !important; font-style: italic; }
+
+/* Page titles */
+.shop-hero h1, .editorial-hero h1, .contact-intro h1, .confirmation h1, .title-row h1,
+.checkout-form h1, .auth-form h1, .dash-content h1, .checkout-empty h1 {
+  font: 600 var(--h-xl)/1.15 var(--sans); text-transform: uppercase; letter-spacing: .02em;
+}
+/* Section titles: same scale as the product rows */
+.sec-head h2, .custom-copy h2, .rail-head h2, .story-intro h2, .split-story h2, .contact-form h2, .no-results h2, .empty h2 {
+  font: 600 var(--h-lg)/1.2 var(--sans); text-transform: uppercase; letter-spacing: .02em;
+}
+/* Product name on the product page: spaced capitals like the cards */
+.buybox h1 { font: 500 clamp(20px, 2.2vw, 28px)/1.3 var(--sans); text-transform: uppercase; letter-spacing: .06em; }
+.qv-body h2 { font: 500 20px/1.3 var(--sans); text-transform: uppercase; letter-spacing: .06em; }
+.customise-head h2 { font: 600 14px/1.2 var(--sans); text-transform: uppercase; letter-spacing: .12em; }
+.acc summary { font: 500 13px/1.2 var(--sans); text-transform: uppercase; letter-spacing: .12em; }
+/* Block titles */
+.values h3, .ea h2, .drawer-title, .summary h2, .checkout-summary > h2 {
+  font: 600 var(--h-md)/1.25 var(--sans); text-transform: uppercase; letter-spacing: .04em;
+}
+.collection-copy strong { font: 600 clamp(17px, 1.7vw, 22px)/1.15 var(--sans); text-transform: uppercase; letter-spacing: .05em; }
+.drawer nav button { font: 500 16px/1 var(--sans); text-transform: uppercase; letter-spacing: .14em; padding: 20px 0; }
+.search-field input { font: 400 20px var(--sans); }
+.search-results strong { font: 500 15px var(--sans); }
+.countdown.live span { font: 600 16px var(--sans); text-transform: uppercase; letter-spacing: .06em; }
+.mini-item span strong, .order-row span strong, .account-cards strong, .track-head strong, .confirm-card strong, .user-hello small { font-family: var(--sans); font-weight: 500; }
+
+/* Body copy rhythm */
+.pdp-desc, .custom-copy > p, .story-intro > div p, .split-story p:not(.eyebrow), .contact-intro > p { font-size: 15px; line-height: 1.7; }
+.shop-hero > p:last-child { font-size: 15px; }
+.buybox .price-row { margin-top: 14px; }
+.buybox h1 + .price-row .price { font-size: 24px; }

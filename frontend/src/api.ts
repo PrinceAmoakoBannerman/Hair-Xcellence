@@ -41,18 +41,28 @@ const toProduct = (p: ApiProduct): Product => ({
 /** Signed-in customer's token (set by the auth store). Sent with every request when present. */
 let authToken: string | null = null
 export const setAuthToken = (t: string | null) => { authToken = t }
+/** Called when the server says the saved sign-in is no longer valid (expired after 30 days). */
+let onSignedOut: () => void = () => {}
+export const setSignedOutHandler = (fn: () => void) => { onSignedOut = fn }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   if (!apiAvailable) throw new Error('The store backend is not configured.')
-  const res = await fetch(`${API_URL}${path}`, {
+  const send = (token: string | null) => fetch(`${API_URL}${path}`, {
     ...init,
     headers: {
       Accept: 'application/json',
       ...(init?.body ? { 'Content-Type': 'application/json' } : {}),
-      ...(authToken ? { Authorization: `Token ${authToken}` } : {}),
+      ...(token ? { Authorization: `Token ${token}` } : {}),
       ...init?.headers,
     },
   })
+  let res = await send(authToken)
+  // Expired sign-in: sign out quietly and try once more as a guest, so e.g. placing an order still works.
+  if (res.status === 401 && authToken) {
+    authToken = null
+    onSignedOut()
+    res = await send(null)
+  }
   if (res.status === 204) return undefined as T
   const data = await res.json().catch(() => null)
   if (!res.ok) throw new ApiError(res.status, data)

@@ -27,6 +27,16 @@ on port 8001 of the same machine.
 - **Root Directory:** `frontend` · Framework preset: Vite
 - **Environment variable:** `VITE_API_URL` = the backend's Render URL, e.g. `https://hairxcellence-api.onrender.com`
 
+## Security and caching
+
+`frontend/vercel.json` sets the security headers: a Content-Security-Policy (scripts only from this site;
+images from the site, Unsplash, Cloudinary and the Render backend; fonts from Google Fonts), plus
+clickjacking, MIME-sniffing and permissions protection. Built files in `/assets/` are cached for a year
+(their names change on every build); everything else is re-checked.
+
+If the backend moves to a custom domain (e.g. `api.hairxcellence.com`), add that domain to `img-src`
+and `connect-src` in `vercel.json`, or API calls and product photos will be blocked.
+
 ## Tech stack
 
 React 19 · TypeScript · Vite · Tailwind CSS v4

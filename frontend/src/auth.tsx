@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
-import { type Account, ApiError, fetchAccount, login as apiLogin, logout as apiLogout, register as apiRegister, setAuthToken } from './api'
+import { type Account, ApiError, fetchAccount, login as apiLogin, logout as apiLogout, register as apiRegister, setAuthToken, setSignedOutHandler } from './api'
 
 /** Signed-in customer. The token is kept in this browser so the customer stays signed in. */
 type AuthState = {
@@ -23,6 +23,9 @@ const AuthContext = createContext<AuthState | null>(null)
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [account, setAccount] = useState<Account | null>(null)
   const [ready, setReady] = useState(false)
+
+  // The server ended the session (expired): forget it here too.
+  useEffect(() => { setSignedOutHandler(() => { write(null); setAccount(null) }) }, [])
 
   // Restore a saved session on load.
   useEffect(() => {

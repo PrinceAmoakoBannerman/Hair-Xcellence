@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
-import { type Go, type Product, IMAGES, INSTAGRAM_HANDLE, INSTAGRAM_URL, NEXT_DROP, products } from '../data'
+import { type Go, type Product, IMAGES, INSTAGRAM_HANDLE, INSTAGRAM_URL, NEXT_DROP } from '../data'
+import { useProducts } from '../store'
 import { Countdown, EarlyAccess, Icon, ProductRail } from '../ui'
 
 const CATEGORIES = [
@@ -32,6 +33,7 @@ const GALLERY = [IMAGES.burgundy, IMAGES.longWater, IMAGES.layered, IMAGES.bodyB
   IMAGES.ginger, IMAGES.dark, IMAGES.red, IMAGES.story, IMAGES.soft, IMAGES.rack]
 
 export default function Home({ go, onQuickView }: { go: Go; onQuickView: (p: Product) => void }) {
+  const { products } = useProducts()
   const [popup, setPopup] = useState(false)
   useEffect(() => {
     let seen = false

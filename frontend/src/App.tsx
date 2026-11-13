@@ -1,17 +1,21 @@
 import { useCallback, useEffect, useLayoutEffect, useState } from 'react'
-import { type GoOpts, type Page, type Product as P, choiceLabel, defaultChoices, groupsFor, priceFor, products } from './data'
+import { type GoOpts, type Page, type Product as P, choiceLabel, defaultChoices, groupsFor, priceFor } from './data'
 import { Footer, Header } from './layout'
 import { QuickView } from './ui'
 import Home from './pages/Home'
 import Shop from './pages/Shop'
 import Product, { type Configured } from './pages/Product'
-import { About, Account, type CartItem, Contact } from './pages/Store'
+import { About, type CartItem, Contact } from './pages/Store'
+import Account from './pages/Account'
 import { Cart } from './pages/Cart'
 import { Checkout } from './pages/Checkout'
 
 type Route = { page: Page; id: string; category: string }
 
 const toItem = ({ product, choices, addons, qty, unitPrice }: Configured): CartItem => ({
+  productId: product.id,
+  choices,
+  addons,
   name: product.name,
   detail: [...groupsFor(product).map(g => choiceLabel(g.key, choices[g.key])), ...addons].join(' · '),
   price: unitPrice,
@@ -29,7 +33,7 @@ function parseHash(): Route {
   const decoded = arg ? decodeURIComponent(arg) : undefined
   return {
     page,
-    id: page === 'product' && decoded && products.some(p => p.id === decoded) ? decoded : products[0].id,
+    id: page === 'product' && decoded ? decoded : '',
     category: page === 'shop' && decoded ? decoded : 'All',
   }
 }
@@ -74,7 +78,7 @@ export default function App() {
 
   const count = cart.reduce((s, x) => s + x.qty, 0)
   const { page } = route
-  const chrome = !['checkout', 'account'].includes(page)
+  const chrome = page !== 'checkout'
 
   return <div className="app">
     {chrome && <Header page={page} category={route.category} go={go} cartCount={count} />}

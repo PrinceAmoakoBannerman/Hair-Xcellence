@@ -30,3 +30,6 @@ logs/
 .vscode/
 .idea/
 .DS_Store
+
+# The backend lives in its own repository (Hair-Xcellence-backend)
+backend/

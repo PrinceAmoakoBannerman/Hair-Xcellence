@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import { type Availability, type Go, type Product, type Texture, CATEGORIES, TEXTURES, matchesCategory, products, startingPrice } from '../data'
+import { type Availability, type Go, type Product, type Texture, CATEGORIES, TEXTURES, matchesCategory, startingPrice } from '../data'
+import { useProducts } from '../store'
 import { Icon, ProductCard } from '../ui'
 
 const PRICE_BANDS = [
@@ -15,6 +16,9 @@ type Sort = typeof SORTS[number]
 const TITLES: Record<string, string> = { All: 'Shop all', 'All Wigs': 'All wigs' }
 
 export default function Shop({ go, category, onQuickView }: { go: Go; category: string; onQuickView: (p: Product) => void }) {
+  const { products } = useProducts()
+  // Built-in categories first, then any new ones added in the admin.
+  const categories = useMemo(() => [...CATEGORIES, ...[...new Set(products.flatMap(p => p.categories))].filter(c => !CATEGORIES.includes(c))], [products])
   const [cat, setCat] = useState(category)
   const [q, setQ] = useState('')
   const [bands, setBands] = useState<string[]>([])
@@ -46,7 +50,7 @@ export default function Shop({ go, category, onQuickView }: { go: Go; category: 
       'Price: high to low': (a, b) => startingPrice(b) - startingPrice(a),
     }
     return [...list].sort(by[sort])
-  }, [cat, q, bands, textures, avail, sort])
+  }, [products, cat, q, bands, textures, avail, sort])
 
   const filters = <>
     <div className="f-group"><h4>Price</h4>{PRICE_BANDS.map(b => <label key={b.label} className="check"><input type="checkbox" checked={bands.includes(b.label)} onChange={() => toggle(bands, setBands, b.label)} /><span />{b.label}</label>)}</div>
@@ -63,7 +67,7 @@ export default function Shop({ go, category, onQuickView }: { go: Go; category: 
     </section>
 
     <div className="cat-strip" role="tablist" aria-label="Categories">
-      {['All', 'All Wigs', ...CATEGORIES].map(c => <button key={c} role="tab" aria-selected={cat === c} className={cat === c ? 'on' : ''} onClick={() => setCat(c)}>{c === 'All' ? 'Shop all' : c}</button>)}
+      {['All', 'All Wigs', ...categories].map(c => <button key={c} role="tab" aria-selected={cat === c} className={cat === c ? 'on' : ''} onClick={() => setCat(c)}>{c === 'All' ? 'Shop all' : c}</button>)}
     </div>
 
     <div className="shop-layout">

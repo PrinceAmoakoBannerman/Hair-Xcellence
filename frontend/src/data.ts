@@ -170,7 +170,8 @@ export function priceFor(p: Product, choices: Record<string, string>, addons: st
 /** Human-readable value of a chosen option, e.g. production time reads "Express production". */
 export const choiceLabel = (key: string, value: string) => (key === 'production' ? `${value} production` : value)
 
-export const startingPrice = (p: Product) => priceFor(p, defaultChoices(p), [])
+/** The "from" price on cards: exactly the price set in the admin (shortest length, cheapest options). */
+export const startingPrice = (p: Product) => p.price
 
 /** Original price shown struck through when a product is on sale (rounded to the nearest 10). */
 export const compareAtPrice = (p: Product) => (p.sale ? Math.round(startingPrice(p) / (1 - p.sale) / 10) * 10 : undefined)

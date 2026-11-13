@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import { type Go, type Page, IMAGES, INSTAGRAM_URL, SUPPORT_HOURS, products, money, startingPrice, whatsappLink } from './data'
+import { type Go, type Page, IMAGES, INSTAGRAM_URL, SUPPORT_HOURS, money, startingPrice, whatsappLink } from './data'
+import { useProducts } from './store'
 import { Icon } from './ui'
 
 const MESSAGES = [
@@ -33,6 +34,7 @@ function Logo({ onClick }: { onClick: () => void }) {
 }
 
 export function Header({ page, category, go, cartCount }: { page: Page; category?: string; go: Go; cartCount: number }) {
+  const { products } = useProducts()
   const [menu, setMenu] = useState(false)
   const [search, setSearch] = useState(false)
   const [q, setQ] = useState('')
@@ -51,7 +53,7 @@ export function Header({ page, category, go, cartCount }: { page: Page; category
     const s = q.trim().toLowerCase()
     if (!s) return []
     return products.filter(p => [p.name, p.detail, ...p.categories].join(' ').toLowerCase().includes(s)).slice(0, 5)
-  }, [q])
+  }, [q, products])
   const isActive = (n: NavItem) => n.page === page && (n.page !== 'shop' || n.category === (category ?? 'All'))
   const nav = (n: NavItem) => { setMenu(false); go(n.page, n.category ? { category: n.category } : undefined) }
 

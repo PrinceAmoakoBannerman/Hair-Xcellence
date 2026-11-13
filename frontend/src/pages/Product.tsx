@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import { type Go, type Option, type OptionGroup, type Product as P, ADDONS, PRODUCTION, choiceLabel, defaultChoices, groupsFor, money, priceFor, products } from '../data'
+import { type Go, type Option, type OptionGroup, type Product as P, ADDONS, PRODUCTION, choiceLabel, defaultChoices, groupsFor, money, priceFor } from '../data'
+import { useProducts } from '../store'
 import { Availability, Icon, ProductCard } from '../ui'
 
 export type Configured = { product: P; choices: Record<string, string>; addons: string[]; qty: number; unitPrice: number }
@@ -26,8 +27,22 @@ function Accordion({ title, children, open = false }: { title: string; children:
   return <details className="acc" open={open}><summary>{title}<Icon name="plus" size={16} /></summary><div className="acc-body">{children}</div></details>
 }
 
-export default function Product({ id, go, onAdd, onBuy }: { id: string; go: Go; onAdd: (c: Configured) => void; onBuy: (c: Configured) => void }) {
-  const product = products.find(p => p.id === id) ?? products[0]
+type Props = { id: string; go: Go; onAdd: (c: Configured) => void; onBuy: (c: Configured) => void }
+
+/** Finds the product in the live catalogue; handles loading and removed products. */
+export default function Product({ id, go, onAdd, onBuy }: Props) {
+  const { products, status } = useProducts()
+  const product = products.find(p => p.id === id)
+  if (product) return <ProductView key={product.id} product={product} products={products} go={go} onAdd={onAdd} onBuy={onBuy} />
+  if (status === 'loading') return <main className="pdp-missing"><p className="muted">Loading…</p></main>
+  return <main className="pdp-missing">
+    <h1>This product isn’t available</h1>
+    <p>It may have sold out or been removed.</p>
+    <button className="btn primary" onClick={() => go('shop', { category: 'All' })}>Browse the shop</button>
+  </main>
+}
+
+function ProductView({ product, products, go, onAdd, onBuy }: Omit<Props, 'id'> & { product: P; products: P[] }) {
   const groups = useMemo(() => groupsFor(product), [product])
   const [choices, setChoices] = useState(() => defaultChoices(product))
   const [addons, setAddons] = useState<string[]>([])

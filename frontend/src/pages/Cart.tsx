@@ -1,4 +1,5 @@
-import { type Go, money, products } from '../data'
+import { type Go, money } from '../data'
+import { useProducts } from '../store'
 import { Icon, ProductRail } from '../ui'
 import { type CartItem, shortDetail } from './Store'
 
@@ -14,6 +15,7 @@ export function PayBadges() {
 }
 
 export function Cart({ items, setItems, go }: { items: CartItem[]; setItems: (x: CartItem[]) => void; go: Go }) {
+  const { products } = useProducts()
   const count = items.reduce((s, x) => s + x.qty, 0)
   const subtotal = items.reduce((s, x) => s + x.price * x.qty, 0)
   const setQty = (i: number, d: number) => setItems(items.map((x, j) => (j === i ? { ...x, qty: Math.max(1, x.qty + d) } : x)))

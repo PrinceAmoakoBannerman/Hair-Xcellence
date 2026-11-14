@@ -6,7 +6,8 @@ import { QuickView } from './ui'
 import Home from './pages/Home'
 import Shop from './pages/Shop'
 import Product, { type Configured } from './pages/Product'
-import { About, type CartItem, Contact } from './pages/Store'
+import { About, type CartItem } from './pages/Store'
+import { Contact } from './pages/Contact'
 import Account from './pages/Account'
 import PaymentResult from './pages/PaymentResult'
 import { Cart } from './pages/Cart'
@@ -42,7 +43,7 @@ function parseHash(): Route {
   const decoded = arg ? decodeURIComponent(arg) : undefined
   return {
     page,
-    id: (page === 'product' || page === 'payment') && decoded ? decoded : '',
+    id: (page === 'product' || page === 'payment' || page === 'contact') && decoded ? decoded : '',
     category: page === 'shop' && decoded ? decoded : 'All',
   }
 }
@@ -67,7 +68,7 @@ export default function App() {
   }, [route.page, route.id, route.category])
 
   const go = useCallback((page: Page, opts?: GoOpts) => {
-    const arg = page === 'product' || page === 'payment' ? opts?.id : page === 'shop' ? opts?.category ?? 'All' : undefined
+    const arg = page === 'product' || page === 'payment' || page === 'contact' ? opts?.id : page === 'shop' ? opts?.category ?? 'All' : undefined
     const hash = `#/${page}${arg ? `/${encodeURIComponent(arg)}` : ''}`
     if (window.location.hash === hash) window.scrollTo({ top: 0, behavior: 'smooth' })
     else window.location.hash = hash
@@ -97,7 +98,7 @@ export default function App() {
     {page === 'cart' && <Cart items={cart} setItems={setCart} go={go} />}
     {page === 'checkout' && <Checkout items={cart} go={go} onPlaced={() => setCart([])} />}
     {page === 'about' && <About />}
-    {page === 'contact' && <Contact />}
+    {page === 'contact' && <Contact key={route.id} arg={route.id} />}
     {page === 'account' && <Account go={go} />}
     {page === 'payment' && <PaymentResult reference={route.id} go={go} />}
     {chrome && <Footer go={go} />}

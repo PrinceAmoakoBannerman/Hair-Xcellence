@@ -40,7 +40,7 @@ export function Icon({ name, size = 20 }: { name: IconName; size?: number }) {
 }
 
 export function Availability({ value }: { value: Product['availability'] }) {
-  const cls = value === 'In stock' ? 'ok' : value === 'Low stock' ? 'low' : 'mto'
+  const cls = value === 'In stock' ? 'ok' : value === 'Low stock' ? 'low' : value === 'Sold out' ? 'out' : 'mto'
   return <span className={`avail ${cls}`}><i />{value}</span>
 }
 
@@ -106,7 +106,9 @@ export function QuickView({ product, go, onClose, onAdd }: { product: Product; g
         <div className="pill-row">{LENGTHS.slice(0, 8).map(l => <button key={l} className={`pill ${l === length ? 'on' : ''}`} onClick={() => setLength(l)}>{l}</button>)}</div>
         <Availability value={product.availability} />
         <div className="qv-actions">
-          <button className="btn primary wide" onClick={() => { onAdd(product, length); setAdded(true) }}>{added ? <>Added to bag <Icon name="check" size={16} /></> : 'Add to bag'}</button>
+          {product.availability === 'Sold out'
+            ? <button className="btn primary wide" onClick={() => { onClose(); go('contact', { id: `request:${product.name}` }) }}>Sold out · Request this wig</button>
+            : <button className="btn primary wide" onClick={() => { onAdd(product, length); setAdded(true) }}>{added ? <>Added to bag <Icon name="check" size={16} /></> : 'Add to bag'}</button>}
           <button className="text-link" onClick={() => { onClose(); go('product', { id: product.id }) }}>Customise every detail <Icon name="arrow" size={16} /></button>
         </div>
       </div>

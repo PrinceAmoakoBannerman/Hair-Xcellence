@@ -75,7 +75,7 @@ export function Header({ page, category, go, cartCount }: { page: Page; category
       {search && <div className="search-panel">
         <div className="search-field"><Icon name="search" /><input autoFocus value={q} onChange={e => setQ(e.target.value)} onKeyDown={e => { if (e.key === 'Escape') setSearch(false); if (e.key === 'Enter' && results[0]) { setSearch(false); go('product', { id: results[0].id }) } }} placeholder="Search wigs, textures, bundles…" aria-label="Search products" /></div>
         {q && <div className="search-results">
-          {results.length === 0 ? <p className="muted">No pieces match “{q}”. Try “body wave” or “closure”.</p> :
+          {results.length === 0 ? <p className="muted">No pieces match “{q}”. Try “body wave” or “closure”, or <button className="text-link" onClick={() => { setSearch(false); go('contact', { id: `request:${q}` }); setQ('') }}>request it</button> and we’ll find or make it for you.</p> :
             results.map(p => <button key={p.id} onClick={() => { setSearch(false); setQ(''); go('product', { id: p.id }) }}><img src={p.image} alt="" /><span><strong>{p.name}</strong><small>{p.detail}</small></span><b>From {money(startingPrice(p))}</b></button>)}
         </div>}
         {!q && <div className="search-suggest"><span>Popular:</span>{['Body wave', 'Glueless', 'HD lace', 'Burgundy', 'Bundles'].map(s => <button key={s} onClick={() => setQ(s)}>{s}</button>)}</div>}

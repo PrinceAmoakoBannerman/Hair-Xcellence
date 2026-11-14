@@ -1021,3 +1021,37 @@ a.whatsapp:hover { background: #fff; }
 .co-count { float: right; margin-left: 10px; font-variant-numeric: tabular-nums; }
 @media (max-width: 760px) { .co-note-field textarea { font-size: 16px; } }
 .od-note { white-space: pre-line; padding: 10px 12px; background: #fff8e8; border-left: 3px solid var(--brand); border-radius: 6px; }
+
+/* Sold out */
+.avail.out { color: #8f1d2c; }
+.avail.out i { background: #8f1d2c; }
+.sold-out-box { display: flex; flex-direction: column; gap: 10px; padding: 16px; border: 1px solid #ecd2d6; border-radius: 10px; background: #fbf1f2; }
+.sold-out-box p { margin: 0; font-size: 14px; line-height: 1.5; color: var(--ink); }
+.sold-out-box .btn { display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; }
+
+/* "Can't find it? Request it" */
+.request-strip { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px 24px; margin-top: 40px; padding: 20px 24px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.request-strip p { margin: 0; flex: 1 1 320px; font-size: 14px; line-height: 1.5; color: var(--muted); }
+.request-strip strong { color: var(--ink); font-weight: 600; }
+.no-results > div { flex-wrap: wrap; }
+
+/* Bag: items that can't be bought any more */
+.bag-item.is-unavailable > img { opacity: .55; }
+.bag-unavailable { margin-top: 6px !important; padding: 8px 10px; border-radius: 6px; background: #fbf1f2; color: #8f1d2c !important; font-size: 13px !important; line-height: 1.45; }
+.bag-unavailable .text-link, .co-error .text-link { color: inherit; font-size: inherit; }
+
+/* Contact / request form */
+.contact-form form { display: block; }
+.contact-form em { font-style: normal; color: var(--muted); font-weight: 400; }
+.contact-form input, .contact-form select, .contact-form textarea { width: 100%; }
+.enq-about { display: inline-flex; align-items: center; gap: 8px; margin: 4px 0 6px; padding: 6px 8px 6px 12px; border-radius: 99px; background: #fff; border: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+.enq-about b { color: var(--ink); font-weight: 600; }
+.enq-about button { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; border: 0; background: transparent; color: var(--muted); cursor: pointer; }
+.enq-about button:hover { background: #f3ebe0; color: var(--ink); }
+.enq-note { margin-top: 14px; font-size: 13px; color: var(--muted); line-height: 1.5; }
+.enq-note a { color: var(--brand); text-decoration: underline; text-underline-offset: 2px; }
+.hp-field { position: absolute !important; left: -10000px !important; width: 1px; height: 1px; opacity: 0; }
+@media (max-width: 760px) { .contact-form input, .contact-form select, .contact-form textarea { font-size: 16px; } }
+
+/* Buttons that can't be used right now look it */
+.btn:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; transform: none; }

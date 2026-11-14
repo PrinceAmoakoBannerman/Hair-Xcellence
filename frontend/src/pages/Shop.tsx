@@ -9,7 +9,7 @@ const PRICE_BANDS = [
   { label: 'GH₵ 3,000 – 4,500', min: 3001, max: 4500 },
   { label: 'Over GH₵ 4,500', min: 4501, max: Infinity },
 ]
-const AVAIL: Availability[] = ['In stock', 'Low stock', 'Made to order']
+const AVAIL: Availability[] = ['In stock', 'Low stock', 'Made to order', 'Sold out']
 const SORTS = ['Featured', 'Best selling', 'Newest', 'Price: low to high', 'Price: high to low'] as const
 type Sort = typeof SORTS[number]
 
@@ -81,8 +81,9 @@ export default function Shop({ go, category, onQuickView }: { go: Go; category: 
           <label className="sort"><span>Sort by</span><select value={sort} onChange={e => setSort(e.target.value as Sort)}>{SORTS.map(s => <option key={s}>{s}</option>)}</select></label>
         </div>
         {activeCount > 0 && <div className="chips">{[...bands, ...textures, ...avail].map(v => <button key={v} onClick={() => { setBands(bands.filter(x => x !== v)); setTextures(textures.filter(x => x !== v)); setAvail(avail.filter(x => x !== v)) }}>{v} <Icon name="x" size={12} /></button>)}</div>}
-        {results.length === 0 ? <div className="no-results"><h2>No pieces match your selection.</h2><p>Try removing a filter, or let us create something custom for you.</p><div><button className="btn outline" onClick={() => { clear(); setCat('All') }}>Reset filters</button><button className="btn primary" onClick={() => go('product', { id: 'custom-made-to-order-wig' })}>Design a custom wig</button></div></div> :
-          <div className="grid-3">{results.map(p => <ProductCard key={p.id} product={p} go={go} onQuickView={onQuickView} />)}</div>}
+        {results.length === 0 ? <div className="no-results"><h2>No pieces match your selection.</h2><p>Try removing a filter, or let us create something custom for you.</p><div><button className="btn outline" onClick={() => { clear(); setCat('All') }}>Reset filters</button><button className="btn primary" onClick={() => go('product', { id: 'custom-made-to-order-wig' })}>Design a custom wig</button><button className="btn outline" onClick={() => go('contact', { id: 'request' })}>Request a wig</button></div></div> :
+          <><div className="grid-3">{results.map(p => <ProductCard key={p.id} product={p} go={go} onQuickView={onQuickView} />)}</div>
+          <div className="request-strip"><p><strong>Can’t find the wig you want?</strong> Tell us the style, length and colour and we’ll find or make it for you.</p><button className="btn outline" onClick={() => go('contact', { id: 'request' })}>Request a wig</button></div></>}
       </section>
     </div>
 

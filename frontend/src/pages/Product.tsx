@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { type Go, type Option, type OptionGroup, type Product as P, ADDONS, PRODUCTION, choiceLabel, defaultChoices, groupsFor, money, priceFor } from '../data'
+import { type Go, type Option, type OptionGroup, type Product as P, ADDONS, PRODUCTION, choiceLabel, defaultChoices, groupsFor, money, priceFor, whatsappLink } from '../data'
 import { useProducts } from '../store'
 import { Availability, Icon, ProductCard } from '../ui'
 
@@ -55,6 +55,7 @@ function ProductView({ product, products, go, onAdd, onBuy }: Omit<Props, 'id'> 
   const unit = priceFor(product, choices, addons)
   const base = priceFor(product, defaultChoices(product), [])
   const config: Configured = { product, choices, addons, qty, unitPrice: unit }
+  const soldOut = product.availability === 'Sold out'
   const toggleAddon = (a: string) => setAddons(addons.includes(a) ? addons.filter(x => x !== a) : [...addons, a])
   const related = products.filter(p => p.id !== product.id && p.kind === product.kind).slice(0, 4)
   const hasAddons = product.kind !== 'bundle'
@@ -99,11 +100,17 @@ function ProductView({ product, products, go, onAdd, onBuy }: Omit<Props, 'id'> 
 
         <div className="summary-box">
           <div><span>Your selection</span><p>{groups.map(gr => choiceLabel(gr.key, choices[gr.key])).join(' · ')}{addons.length > 0 && ` · ${addons.join(' · ')}`}</p></div>
+          {soldOut ? <div className="sold-out-box">
+            <p><strong>Sold out right now.</strong> Tell us what you’d like and we’ll let you know when we can make or restock it.</p>
+            <button className="btn primary wide" onClick={() => go('contact', { id: `request:${product.name}` })}>Request this wig</button>
+            <a className="btn outline wide" href={whatsappLink(`Hi Hair Xcellence, is the ${product.name} available again?`)} target="_blank" rel="noopener noreferrer"><Icon name="whatsapp" size={16} /> Ask on WhatsApp</a>
+          </div> : <>
           <div className="buy-row">
             <div className="qty" aria-label="Quantity"><button onClick={() => setQty(Math.max(1, qty - 1))} aria-label="Decrease quantity"><Icon name="minus" size={15} /></button><span>{qty}</span><button onClick={() => setQty(qty + 1)} aria-label="Increase quantity"><Icon name="plus" size={15} /></button></div>
             <button className="btn primary grow" onClick={() => { onAdd(config); setAdded(true) }}>{added ? <>Added to bag <Icon name="check" size={16} /></> : <>Add to cart · {money(unit * qty)}</>}</button>
           </div>
           <button className="btn outline wide" onClick={() => onBuy(config)}>Buy now</button>
+          </>}
         </div>
 
         <ul className="perks">
@@ -140,7 +147,9 @@ function ProductView({ product, products, go, onAdd, onBuy }: Omit<Props, 'id'> 
     {/* Mobile sticky purchase bar */}
     <div className="sticky-buy">
       <span><small>Total</small><strong>{money(unit * qty)}</strong></span>
-      <button className="btn primary" onClick={() => { onAdd(config); setAdded(true) }}>{added ? 'Added ✓' : 'Add to cart'}</button>
+      {soldOut
+        ? <button className="btn primary" onClick={() => go('contact', { id: `request:${product.name}` })}>Request this wig</button>
+        : <button className="btn primary" onClick={() => { onAdd(config); setAdded(true) }}>{added ? 'Added ✓' : 'Add to cart'}</button>}
     </div>
   </main>
 }

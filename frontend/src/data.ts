@@ -51,7 +51,7 @@ export const whatsappLink = (message: string) => `https://wa.me/${WHATSAPP}?text
 export const money = (n: number) => `GH₵ ${n.toLocaleString()}`
 
 export type Kind = 'wig' | 'bundle' | 'closure'
-export type Availability = 'In stock' | 'Low stock' | 'Made to order'
+export type Availability = 'In stock' | 'Low stock' | 'Made to order' | 'Sold out'
 export type Texture = 'Straight' | 'Body Wave' | 'Deep Wave' | 'Loose Wave' | 'Curly'
 
 export type Product = {

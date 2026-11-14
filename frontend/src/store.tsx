@@ -47,3 +47,19 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
 }
 
 export const useProducts = () => useContext(ProductsContext)
+
+/**
+ * Bag items that can't be bought right now, with the reason (sold out, or removed from the shop).
+ * Only judged against the live list from the backend, never the built-in fallback.
+ */
+export function useUnavailable(items: { productId: string }[]): Record<string, string> {
+  const { products, status } = useProducts()
+  if (status !== 'live') return {}
+  const out: Record<string, string> = {}
+  for (const x of items) {
+    const p = products.find(q => q.id === x.productId)
+    if (!p) out[x.productId] = 'No longer available'
+    else if (p.availability === 'Sold out') out[x.productId] = 'Sold out'
+  }
+  return out
+}

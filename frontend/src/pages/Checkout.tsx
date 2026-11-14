@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { type Go, money, productionFee, productionFeeEach, whatsappLink } from '../data'
 import { Icon } from '../ui'
 import { fetchPaymentConfig, placeOrder as submitOrder, startPayment } from '../api'
+import { useUnavailable } from '../store'
 import { useAuth } from '../auth'
 import { type CartItem, shortDetail } from './Store'
 
@@ -42,6 +43,8 @@ export function Checkout({ items, go, onPlaced }: { items: CartItem[]; go: Go; o
   const [payLater, setPayLater] = useState(false)
   const subtotal = items.reduce((s, x) => s + x.price * x.qty, 0)
   const rushFee = productionFee(items)
+  const unavailable = useUnavailable(items)
+  const blockedNames = items.filter(x => unavailable[x.productId]).map(x => x.name)
 
   const [redirecting, setRedirecting] = useState(false)
   // Back from Paystack may restore this page from the browser's cache; reload so the payment check runs.
@@ -202,8 +205,9 @@ export function Checkout({ items, go, onPlaced }: { items: CartItem[]; go: Go; o
             <span className="co-opt-text"><strong>{x}</strong>{i < 3 && <small>{online ? 'Approve the payment on your phone' : 'We’ll send payment details to your phone'}</small>}</span>
             <span className={`pay ${['momo', 'telecel', 'at', 'visa'][i]}`}>{['MoMo', 'Telecel', 'AT', 'VISA'][i]}</span>
           </label>)}</div>
+          {blockedNames.length > 0 && <p className="co-error" role="alert">{blockedNames.join(', ')} {blockedNames.length === 1 ? 'is' : 'are'} no longer available. <button className="text-link" onClick={() => go('cart')}>Go back to your bag</button> to remove {blockedNames.length === 1 ? 'it' : 'them'}.</p>}
           {submitError && <p className="co-error" role="alert">{submitError}</p>}
-          <button className="btn primary wide co-pay" onClick={placeOrder} disabled={placing}>{placing ? (online ? 'Opening secure payment…' : 'Placing your order…') : `${online ? 'Place order & pay' : 'Place order'} · ${money(subtotal + delivery.fee)}`}</button>
+          <button className="btn primary wide co-pay" onClick={placeOrder} disabled={placing || blockedNames.length > 0}>{placing ? (online ? 'Opening secure payment…' : 'Placing your order…') : `${online ? 'Place order & pay' : 'Place order'} · ${money(subtotal + delivery.fee)}`}</button>
           <p className="secure-note"><Icon name="shield" size={15} /> {online ? 'You’ll pay securely on Paystack after placing your order.' : 'No payment is taken now. We’ll confirm your order and send payment details on WhatsApp.'}</p>
         </section>
       </div>

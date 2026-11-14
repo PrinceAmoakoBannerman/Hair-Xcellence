@@ -1,5 +1,5 @@
 import { type Go, money, productionFee, productionFeeEach } from '../data'
-import { useProducts } from '../store'
+import { useProducts, useUnavailable } from '../store'
 import { Icon, ProductRail } from '../ui'
 import { type CartItem, shortDetail } from './Store'
 
@@ -22,6 +22,8 @@ export function Cart({ items, setItems, go }: { items: CartItem[]; setItems: (x:
   const setQty = (i: number, d: number) => setItems(items.map((x, j) => (j === i ? { ...x, qty: Math.max(1, x.qty + d) } : x)))
   const remove = (i: number) => setItems(items.filter((_, j) => j !== i))
   const suggestions = products.filter(p => p.isBest && !items.some(x => x.name === p.name))
+  const unavailable = useUnavailable(items)
+  const blocked = Object.keys(unavailable).length > 0
 
   return <main className="bag">
     <div className="bag-wrap">
@@ -38,7 +40,7 @@ export function Cart({ items, setItems, go }: { items: CartItem[]; setItems: (x:
       </div> :
 
       <div className="bag-grid">
-        <ul className="bag-items">{items.map((x, i) => <li key={`${x.name}-${i}`} className="bag-item">
+        <ul className="bag-items">{items.map((x, i) => <li key={`${x.name}-${i}`} className={`bag-item ${unavailable[x.productId] ? 'is-unavailable' : ''}`}>
           <img src={x.image} alt={x.name} />
           <div className="bag-info">
             <div className="bag-top">
@@ -46,6 +48,7 @@ export function Cart({ items, setItems, go }: { items: CartItem[]; setItems: (x:
               <span className="bag-price">{money((x.price - productionFeeEach(x.choices)) * x.qty)}</span>
             </div>
             <p>{shortDetail(x.detail, 4)}</p>
+            {unavailable[x.productId] && <p className="bag-unavailable"><b>{unavailable[x.productId]}.</b> Please remove it to check out, or <button className="text-link" onClick={() => go('contact', { id: `request:${x.name}` })}>request it</button>.</p>}
             {x.qty > 1 && <small>{money(x.price - productionFeeEach(x.choices))} each</small>}
             <div className="bag-actions">
               <div className="stepper" aria-label={`Quantity for ${x.name}`}>
@@ -66,7 +69,8 @@ export function Cart({ items, setItems, go }: { items: CartItem[]; setItems: (x:
             <div><dt>Delivery</dt><dd className="muted">Calculated at checkout</dd></div>
             <div className="grand"><dt>Total</dt><dd>{money(subtotal)}</dd></div>
           </dl>
-          <button className="btn primary wide" onClick={() => go('checkout')}>Checkout</button>
+          {blocked && <p className="co-error">Remove the items marked unavailable to check out.</p>}
+          <button className="btn primary wide" onClick={() => go('checkout')} disabled={blocked}>Checkout</button>
           <p className="secure-note"><Icon name="shield" size={15} /> Secure checkout with Paystack</p>
           <PayBadges />
         </aside>

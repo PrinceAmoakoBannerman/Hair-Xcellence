@@ -182,3 +182,12 @@ export const startPayment = (order: string, email: string) =>
   request<{ authorization_url: string; reference: string }>('/api/payments/start/', { method: 'POST', body: JSON.stringify({ order, email }) })
 export const verifyPayment = (reference: string) =>
   request<{ paystack_status: string; order: OrderResponse }>(`/api/payments/verify/?reference=${encodeURIComponent(reference)}`)
+
+// ── Enquiries (contact / wig request form) ────────────────────────────
+export type EnquiryTopic = 'request' | 'choosing' | 'custom' | 'order' | 'other'
+export type EnquiryRequest = {
+  topic: EnquiryTopic; name: string; phone: string; email?: string; message: string
+  product?: string; needed_by?: string | null; website?: string
+}
+export const sendEnquiry = (body: EnquiryRequest) =>
+  request<{ ok: boolean }>('/api/enquiries/', { method: 'POST', body: JSON.stringify(body) })

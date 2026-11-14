@@ -35,7 +35,13 @@ export const IMAGES = {
 export const NEXT_DROP = new Date('2026-11-27T18:00:00Z')
 
 /** WhatsApp business number (international format, digits only) and opening hours. */
-export const WHATSAPP = '233245550198'
+export const WHATSAPP = '233240262421'
+/** Phone number as shown on the site, and for tap-to-call links. */
+export const PHONE_DISPLAY = '+233 24 026 2421'
+export const PHONE_TEL = '+233240262421'
+/** Studio location (Google Maps). */
+export const STORE_ADDRESS = 'Odotei Tsui St, Accra, Ghana'
+export const MAPS_URL = 'https://maps.app.goo.gl/YgfABrnNRBZitAkA6'
 export const SUPPORT_HOURS = 'Mon–Sat, 9am–7pm'
 /** Instagram profile. */
 export const INSTAGRAM_HANDLE = 'hairxcellence._'

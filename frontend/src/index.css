@@ -1002,3 +1002,10 @@ body { font-size: 15px; line-height: 1.6; }
 @keyframes svc-in { from { opacity: 0; transform: translate(-50%, 10px); } }
 @media (max-width: 600px) { .svc-notice { bottom: 12px; align-items: flex-start; flex-wrap: wrap; } .svc-notice p { flex-basis: calc(100% - 70px); } .svc-retry { margin-left: 38px; } }
 @media (prefers-reduced-motion: reduce) { .svc-notice { animation: none; } }
+
+/* Contact details: real links (call, directions, Instagram) on the dark panel */
+.contact-details a { color: inherit; text-decoration: none; }
+.contact-details strong a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.contact-details .text-link { display: inline-block; margin-top: 6px; color: #bd9d81; font-size: 11px; }
+a.whatsapp { text-decoration: none; width: fit-content; }
+a.whatsapp:hover { background: #fff; }

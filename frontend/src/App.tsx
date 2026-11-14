@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useState } from 'react'
 import { type GoOpts, type Page, type Product as P, choiceLabel, defaultChoices, groupsFor, priceFor } from './data'
 import { Footer, Header } from './layout'
+import { ServiceNotice } from './notice'
 import { QuickView } from './ui'
 import Home from './pages/Home'
 import Shop from './pages/Shop'
@@ -100,6 +101,7 @@ export default function App() {
     {page === 'account' && <Account go={go} />}
     {page === 'payment' && <PaymentResult reference={route.id} go={go} />}
     {chrome && <Footer go={go} />}
+    <ServiceNotice />
     {quick && <QuickView product={quick} go={go} onClose={() => setQuick(null)} onAdd={quickAdd} />}
   </div>
 }

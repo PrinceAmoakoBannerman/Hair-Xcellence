@@ -24,6 +24,7 @@ function toReceipt(o: OrderResponse): Order {
     delivery: DELIVERY.find(d => d.name === o.delivery_method) ?? { name: o.delivery_method, time: '', fee: o.delivery_fee },
     payment: o.payment_method,
     contact: { name: o.name, email: o.email, phone: o.phone, address: o.address, city: o.city, region: o.region },
+    note: o.customer_note ?? '',
   }
 }
 

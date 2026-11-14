@@ -13,7 +13,7 @@ const PAYMENTS = ['MTN Mobile Money', 'Telecel Cash', 'AT Money', 'Debit / Credi
 const REGIONS = ['Greater Accra', 'Ashanti', 'Central', 'Eastern', 'Western', 'Volta', 'Northern', 'Upper East', 'Upper West', 'Bono', 'Bono East', 'Ahafo', 'Western North', 'Oti', 'Savannah', 'North East']
 
 type Contact = { name: string; email: string; phone: string; address: string; city: string; region: string }
-export type Order = { number: string; date: string; items: CartItem[]; subtotal: number; deliveryFee: number; delivery: typeof DELIVERY[number]; payment: string; contact: Contact }
+export type Order = { number: string; date: string; items: CartItem[]; subtotal: number; deliveryFee: number; delivery: typeof DELIVERY[number]; payment: string; contact: Contact; note?: string }
 
 const required: (keyof Contact)[] = ['name', 'email', 'phone', 'address', 'city']
 const LABELS: Record<keyof Contact, string> = { name: 'Full name', email: 'Email address', phone: 'Phone number', address: 'Delivery address', city: 'City', region: 'Region' }
@@ -33,6 +33,7 @@ export function Checkout({ items, go, onPlaced }: { items: CartItem[]; go: Go; o
   const [errors, setErrors] = useState<Partial<Record<keyof Contact, string>>>({})
   const [delivery, setDelivery] = useState(DELIVERY[0])
   const [payment, setPayment] = useState(PAYMENTS[0])
+  const [note, setNote] = useState('')
   const [order, setOrder] = useState<Order | null>(null)
   const [placing, setPlacing] = useState(false)
   const [online, setOnline] = useState(false)  // Paystack switched on in the backend?
@@ -83,13 +84,14 @@ export function Checkout({ items, go, onPlaced }: { items: CartItem[]; go: Go; o
         ...contact,
         delivery_method: delivery.name,
         payment_method: payment,
+        customer_note: note.trim(),
         items: items.map(x => ({ product: x.productId, options: x.choices, addons: x.addons, quantity: x.qty })),
       })
       const receipt: Order = {
         number: res.number,
         date: new Date(res.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }),
         items: items.map((x, i) => ({ ...x, price: res.items[i]?.unit_price ?? x.price })),
-        subtotal: res.subtotal, deliveryFee: res.delivery_fee, delivery, payment, contact,
+        subtotal: res.subtotal, deliveryFee: res.delivery_fee, delivery, payment, contact, note: note.trim(),
       }
       const payOnline = await fetchPaymentConfig().then(c => c.online).catch(() => online)
       if (payOnline) {
@@ -180,6 +182,16 @@ export function Checkout({ items, go, onPlaced }: { items: CartItem[]; go: Go; o
             <span className="co-opt-text"><strong>{d.name}</strong><small>{d.time}</small></span>
             <b>{money(d.fee)}</b>
           </label>)}</div>
+          <label className="co-note-field">
+            <span>Order note <em>(optional)</em></span>
+            <textarea value={note} onChange={e => setNote(e.target.value)} maxLength={500} rows={3}
+              placeholder="e.g. I need it by Friday for a wedding, or please call before delivery" />
+            <small>
+              Need your wig sooner? Choose <b>Priority production</b> (ready in 2 working days) on the product page.
+              Other timing requests are confirmed with you on WhatsApp.
+              <span className="co-count">{note.length}/500</span>
+            </small>
+          </label>
         </section>
 
         <section className="co-card">
@@ -265,6 +277,7 @@ export function Confirmation({ order, go, payLater = false, paid = false, onPay 
           <p>{contact.name}<br />{contact.email}<br />{contact.phone}</p>
           <h3>Delivery address</h3>
           <p>{contact.address}<br />{contact.city}, {contact.region}<br />Ghana</p>
+          {order.note && <><h3>Your note</h3><p className="od-note">{order.note}</p></>}
         </section>
       </div>
 

@@ -1009,3 +1009,15 @@ body { font-size: 15px; line-height: 1.6; }
 .contact-details .text-link { display: inline-block; margin-top: 6px; color: #bd9d81; font-size: 11px; }
 a.whatsapp { text-decoration: none; width: fit-content; }
 a.whatsapp:hover { background: #fff; }
+
+/* Checkout: optional order note */
+.co-note-field { display: flex; flex-direction: column; gap: 6px; margin-top: 18px; }
+.co-note-field > span { font-size: 13px; font-weight: 500; color: var(--ink); }
+.co-note-field em { font-style: normal; font-weight: 400; color: var(--muted); }
+.co-note-field textarea { width: 100%; min-height: 84px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 8px; background: #fff; font: inherit; font-size: 15px; line-height: 1.5; color: var(--ink); resize: vertical; }
+.co-note-field textarea:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px rgba(100, 29, 50, .1); }
+.co-note-field small { font-size: 12px; line-height: 1.5; color: var(--muted); }
+.co-note-field small b { color: var(--brand); font-weight: 600; }
+.co-count { float: right; margin-left: 10px; font-variant-numeric: tabular-nums; }
+@media (max-width: 760px) { .co-note-field textarea { font-size: 16px; } }
+.od-note { white-space: pre-line; padding: 10px 12px; background: #fff8e8; border-left: 3px solid var(--brand); border-radius: 6px; }

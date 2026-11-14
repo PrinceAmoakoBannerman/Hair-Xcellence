@@ -149,13 +149,14 @@ export const fetchProducts = async () => (await request<ApiProduct[]>('/api/prod
 export type OrderLine = { product: string; options: Record<string, string>; addons: string[]; quantity: number }
 export type OrderRequest = {
   name: string; email: string; phone: string; address: string; city: string; region: string
-  delivery_method: string; payment_method: string; items: OrderLine[]
+  delivery_method: string; payment_method: string; items: OrderLine[]; customer_note?: string
 }
 export type OrderResponse = {
   number: string; status: string; created_at: string; subtotal: number; delivery_fee: number; total: number
   payment_status: string
   name: string; email: string; phone: string; address: string; city: string; region: string
   delivery_method: string; payment_method: string
+  customer_note?: string
   items: { product: string | null; product_name: string; image: string; options: Record<string, string>; addons: string[]; unit_price: number; quantity: number }[]
 }
 

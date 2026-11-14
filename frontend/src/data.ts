@@ -61,6 +61,8 @@ export type Product = {
   categories: string[]
   texture: Texture
   price: number // base price at the shortest length with default options
+  /** Lengths offered and what each adds to the price (set per product in the admin). */
+  lengths?: Option[]
   availability: Availability
   rating: number
   reviews: number
@@ -119,9 +121,15 @@ export const PRODUCTION: Option[] = [
 
 export const LENGTHS = ['10"', '12"', '14"', '16"', '18"', '20"', '22"', '24"', '26"', '28"', '30"', '32"']
 
+/** Lengths a product is offered in: the ones set in the admin, or the standard 10"–32" if none came from the backend. */
+export function lengthOptions(p: Product): Option[] {
+  if (p.lengths?.length) return p.lengths
+  const step = p.kind === 'bundle' ? 60 : p.kind === 'closure' ? 70 : 180
+  return LENGTHS.map((label, i) => ({ label, price: i * step }))
+}
+
 export function groupsFor(p: Product): OptionGroup[] {
-  const lengthStep = p.kind === 'bundle' ? 60 : p.kind === 'closure' ? 70 : 180
-  const length: OptionGroup = { key: 'length', title: 'Hair length', style: 'pill', options: LENGTHS.map((label, i) => ({ label, price: i * lengthStep })) }
+  const length: OptionGroup = { key: 'length', title: 'Hair length', style: 'pill', options: lengthOptions(p) }
   const texture: OptionGroup = { key: 'texture', title: 'Hair texture', style: 'pill', options: [
     { label: 'Straight', price: 0 }, { label: 'Body Wave', price: 0 }, { label: 'Deep Wave', price: p.kind === 'wig' ? 150 : 40 }, { label: 'Loose Wave', price: p.kind === 'wig' ? 100 : 30 }, { label: 'Curly', price: p.kind === 'wig' ? 200 : 50 },
   ] }
@@ -161,7 +169,11 @@ export function defaultChoices(p: Product): Record<string, string> {
   if (pick.cap !== undefined) pick.cap = 'Medium'
   if (p.categories.includes('HD Lace Wigs')) pick.laceType = 'HD Lace'
   if (p.categories.includes('Frontal Wigs')) pick.laceSize = '13×4 Frontal'
-  if (p.kind === 'wig') pick.length = '18"'
+  // Wigs open on 18" when it's offered; otherwise the length closest to it.
+  if (p.kind === 'wig') {
+    const inches = (label: string) => parseInt(label, 10) || 0
+    pick.length = [...lengthOptions(p)].sort((a, b) => Math.abs(inches(a.label) - 18) - Math.abs(inches(b.label) - 18))[0]?.label ?? pick.length
+  }
   return pick
 }
 
@@ -197,7 +209,7 @@ export function productionFee(items: { choices?: Record<string, string>; qty: nu
 }
 
 /** The "from" price on cards: exactly the price set in the admin (shortest length, cheapest options). */
-export const startingPrice = (p: Product) => p.price
+export const startingPrice = (p: Product) => p.price + Math.min(...lengthOptions(p).map(o => o.price))
 
 /** Original price shown struck through when a product is on sale (rounded to the nearest 10). */
 export const compareAtPrice = (p: Product) => (p.sale ? Math.round(startingPrice(p) / (1 - p.sale) / 10) * 10 : undefined)

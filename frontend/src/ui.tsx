@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { type Go, type Product, compareAtPrice, money, startingPrice, LENGTHS } from './data'
+import { type Go, type Product, compareAtPrice, defaultChoices, lengthOptions, money, startingPrice } from './data'
 
 export type IconName = 'menu' | 'search' | 'user' | 'bag' | 'arrow' | 'chevron' | 'x' | 'plus' | 'minus' | 'check' | 'heart' | 'whatsapp' | 'box' | 'truck' | 'card' | 'chart' | 'grid' | 'users' | 'settings' | 'edit' | 'trash' | 'star' | 'sliders' | 'eye' | 'instagram' | 'shield' | 'return' | 'sparkle' | 'scissors' | 'cart'
 
@@ -86,7 +86,7 @@ export function ProductRail({ title, items, go, onQuickView, onViewAll }: { titl
 }
 
 export function QuickView({ product, go, onClose, onAdd }: { product: Product; go: Go; onClose: () => void; onAdd: (p: Product, length: string) => void }) {
-  const [length, setLength] = useState(product.kind === 'wig' ? '18"' : '10"')
+  const [length, setLength] = useState(() => defaultChoices(product).length ?? lengthOptions(product)[0]?.label ?? '')
   const [added, setAdded] = useState(false)
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
@@ -103,7 +103,7 @@ export function QuickView({ product, go, onClose, onAdd }: { product: Product; g
         <p className="qv-price">From {money(startingPrice(product))}</p>
         <p className="qv-desc">{product.short}</p>
         <p className="field-label">Length <b>{length}</b></p>
-        <div className="pill-row">{LENGTHS.slice(0, 8).map(l => <button key={l} className={`pill ${l === length ? 'on' : ''}`} onClick={() => setLength(l)}>{l}</button>)}</div>
+        <div className="pill-row">{lengthOptions(product).map(o => o.label).map(l => <button key={l} className={`pill ${l === length ? 'on' : ''}`} onClick={() => setLength(l)}>{l}</button>)}</div>
         <Availability value={product.availability} />
         <div className="qv-actions">
           {product.availability === 'Sold out'

@@ -14,6 +14,7 @@ type ApiProduct = {
   id: string; name: string; kind: Kind; categories: string[]; texture: Texture; price: number; sale: number
   availability: Availability; isNew: boolean; isBest: boolean; tag: string; image: string; gallery: string[]
   short: string; description: string; detail: string; colour: string; popularity: number
+  lengths?: { label: string; price: number }[]
 }
 
 const toProduct = (p: ApiProduct): Product => ({
@@ -36,6 +37,7 @@ const toProduct = (p: ApiProduct): Product => ({
   detail: p.detail,
   colour: p.colour || undefined,
   sale: Number(p.sale) || undefined,
+  lengths: p.lengths?.map(l => ({ label: l.label, price: Number(l.price) })),
 })
 
 /** Signed-in customer's token (set by the auth store). Sent with every request when present. */
